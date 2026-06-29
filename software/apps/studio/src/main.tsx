@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client';
 import { createAuraDigitalTwin, type AuraCabinContext } from '@aura-dcos/digital-twin';
 import { createAuraSurfaceRegistry, type AuraSurface } from '@aura-dcos/surfaces';
 import { OrchestrationPanel } from './OrchestrationPanel';
+import { OutputManagerPanel } from './OutputManagerPanel';
 import './styles.css';
 
 interface EventEntry {
@@ -216,9 +217,9 @@ function App() {
     <main className="app">
       <header className="hero">
         <div>
-          <p className="eyebrow">AURA DCOS · Phase E</p>
+          <p className="eyebrow">AURA DCOS · Phase F</p>
           <h1>AURA Studio</h1>
-          <p>Synchronised controller for live dashboard, roof, projection and floor outputs.</p>
+          <p>Hardware-aware controller for live dashboard, roof, projection and floor outputs.</p>
         </div>
         <div className={`risk risk-${risk}`}>Risk: {risk}</div>
       </header>
@@ -259,13 +260,7 @@ function App() {
         </section>
 
         <section className="panel">
-          <h2>Output Windows</h2>
-          <div className="actions">
-            <button onClick={() => openOutput('dashboard')}>Open Dashboard Output</button>
-            <button onClick={() => openOutput('roof')}>Open Roof Output</button>
-            <button onClick={() => openOutput('projection')}>Open AURA Projection Output</button>
-            <button onClick={() => openOutput('floor')}>Open Floor Output</button>
-          </div>
+          <OutputManagerPanel baseUrl={`${window.location.origin}${window.location.pathname}`} onOpen={(plan) => openOutput(plan.role as OutputRoute)} />
           <h2>Runtime Event Log</h2>
           <div className="events">
             {events.map((event, index) => (
