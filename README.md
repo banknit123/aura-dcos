@@ -30,7 +30,9 @@ aura-dcos/
 
 **Phase A: Core Runtime** is complete at foundation level.
 
-**Phase B: Cabin Foundation** is now started and includes the first cabin-specific packages.
+**Phase B: Cabin Foundation** has started and includes the first cabin-specific packages.
+
+**Phase C: AURA Studio** has started with the first runnable browser app.
 
 Included packages:
 
@@ -44,10 +46,27 @@ Included packages:
 - `@aura-dcos/digital-twin`
 - `@aura-dcos/capabilities`
 
+Included apps:
+
+- `@aura-dcos/studio`
+
 ## Commands
+
+Install dependencies:
 
 ```bash
 npm install
+```
+
+Run AURA Studio:
+
+```bash
+npm run dev --workspace @aura-dcos/studio
+```
+
+Quality checks:
+
+```bash
 npm run typecheck
 npm test
 npm run build
@@ -59,4 +78,4 @@ Every digital surface must either improve safety, reduce cognitive load, increas
 
 ## Next Phase
 
-Phase C will add the first runnable AURA Studio app that wires together the core runtime, surface registry, HAL and digital twin.
+Phase C should continue by replacing local UI logic with direct imports from the DCOS packages and adding multi-screen output pages.
