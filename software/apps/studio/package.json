@@ -10,6 +10,8 @@
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
+    "@aura-dcos/digital-twin": "0.1.0",
+    "@aura-dcos/surfaces": "0.1.0",
     "@vitejs/plugin-react": "latest",
     "vite": "latest",
     "typescript": "^5.5.0",
