@@ -1,28 +1,8 @@
 import React, { useMemo, useState } from 'react';
 import { createRoot } from 'react-dom/client';
+import { createAuraDigitalTwin, type AuraCabinContext } from '@aura-dcos/digital-twin';
+import { createAuraSurfaceRegistry, type AuraSurface } from '@aura-dcos/surfaces';
 import './styles.css';
-
-type SurfaceState = 'off' | 'ambient' | 'informative' | 'interactive' | 'emergency';
-type CabinMode = 'commute' | 'family' | 'business' | 'relax' | 'entertainment' | 'safety';
-type VehicleState = 'parked' | 'driving';
-
-interface Surface {
-  id: string;
-  name: string;
-  kind: string;
-  state: SurfaceState;
-  energy: number;
-  visibleToDriver: boolean;
-}
-
-interface CabinContext {
-  mode: CabinMode;
-  vehicleState: VehicleState;
-  speedKph: number;
-  weather: 'clear' | 'rain' | 'fog';
-  occupants: number;
-  childPresent: boolean;
-}
 
 interface EventEntry {
   timestamp: string;
@@ -31,15 +11,7 @@ interface EventEntry {
   message: string;
 }
 
-const initialSurfaces: Surface[] = [
-  { id: 'dashboard', name: 'Dashboard', kind: 'dashboard', state: 'informative', energy: 80, visibleToDriver: true },
-  { id: 'windshield', name: 'AR Windshield', kind: 'windshield', state: 'informative', energy: 70, visibleToDriver: true },
-  { id: 'roof', name: 'Digital Roof', kind: 'roof', state: 'ambient', energy: 35, visibleToDriver: false },
-  { id: 'floor', name: 'Digital Floor', kind: 'floor', state: 'ambient', energy: 30, visibleToDriver: false },
-  { id: 'projection', name: 'AURA Presence', kind: 'projection', state: 'interactive', energy: 55, visibleToDriver: true },
-];
-
-const initialContext: CabinContext = {
+const initialContext: AuraCabinContext = {
   mode: 'family',
   vehicleState: 'parked',
   speedKph: 0,
@@ -48,21 +20,25 @@ const initialContext: CabinContext = {
   childPresent: true,
 };
 
-function riskLevel(context: CabinContext): 'normal' | 'elevated' | 'critical' {
-  let score = 0;
-  if (context.vehicleState === 'driving') score += 1;
-  if (context.speedKph > 60) score += 2;
-  if (context.weather !== 'clear') score += 1;
-  if (context.mode === 'safety') score += 3;
+const initialSurfaces: AuraSurface[] = [
+  { id: 'dashboard', name: 'Dashboard', kind: 'dashboard', state: 'informative', energy: 80, visibleToDriver: true, priority: 'high' },
+  { id: 'windshield', name: 'AR Windshield', kind: 'windshield', state: 'informative', energy: 70, visibleToDriver: true, priority: 'critical' },
+  { id: 'roof', name: 'Digital Roof', kind: 'roof', state: 'ambient', energy: 35, visibleToDriver: false, priority: 'medium' },
+  { id: 'floor', name: 'Digital Floor', kind: 'floor', state: 'ambient', energy: 30, visibleToDriver: false, priority: 'medium' },
+  { id: 'projection', name: 'AURA Presence', kind: 'projection', state: 'interactive', energy: 55, visibleToDriver: true, priority: 'medium' },
+];
 
-  if (score >= 5) return 'critical';
-  if (score >= 3) return 'elevated';
-  return 'normal';
+function now(): string {
+  return new Date().toLocaleTimeString();
 }
 
-function applySafetyRules(surfaces: Surface[], context: CabinContext): Surface[] {
-  const risk = riskLevel(context);
+function createInitialSurfaceRegistry() {
+  const registry = createAuraSurfaceRegistry();
+  for (const surface of initialSurfaces) registry.register(surface);
+  return registry;
+}
 
+function applySafetyRules(surfaces: AuraSurface[], risk: 'normal' | 'elevated' | 'critical'): AuraSurface[] {
   if (risk === 'normal') return surfaces;
 
   return surfaces.map((surface) => {
@@ -78,36 +54,42 @@ function applySafetyRules(surfaces: Surface[], context: CabinContext): Surface[]
   });
 }
 
-function now(): string {
-  return new Date().toLocaleTimeString();
-}
-
 function App() {
-  const [context, setContext] = useState<CabinContext>(initialContext);
-  const [surfaces, setSurfaces] = useState<Surface[]>(initialSurfaces);
+  const [twin] = useState(() => createAuraDigitalTwin(initialContext));
+  const [surfaceRegistry] = useState(createInitialSurfaceRegistry);
+  const [context, setContext] = useState<AuraCabinContext>(initialContext);
+  const [surfaces, setSurfaces] = useState<AuraSurface[]>(surfaceRegistry.list());
   const [events, setEvents] = useState<EventEntry[]>([
     { timestamp: now(), type: 'kernel.running', source: 'studio', message: 'AURA DCOS Studio booted' },
   ]);
 
-  const adjustedSurfaces = useMemo(() => applySafetyRules(surfaces, context), [surfaces, context]);
-  const risk = riskLevel(context);
+  const risk = twin.riskLevel();
+  const adjustedSurfaces = useMemo(() => applySafetyRules(surfaces, risk), [surfaces, risk]);
 
   function emit(type: string, message: string): void {
     setEvents((previous) => [{ timestamp: now(), type, source: 'studio', message }, ...previous].slice(0, 12));
   }
 
-  function runScenario(mode: CabinMode, vehicleState: VehicleState, speedKph: number, weather: CabinContext['weather']): void {
-    setContext((previous) => ({ ...previous, mode, vehicleState, speedKph, weather }));
-    emit('context.updated', `Mode changed to ${mode}, ${vehicleState}, ${speedKph} km/h, weather ${weather}`);
+  function updateContext(update: Partial<AuraCabinContext>): void {
+    const snapshot = twin.update(update);
+    setContext(snapshot.context);
+    emit('digitalTwin.updated', `Context updated. Risk is now ${twin.riskLevel()}`);
+  }
+
+  function runScenario(mode: AuraCabinContext['mode'], vehicleState: AuraCabinContext['vehicleState'], speedKph: number, weather: AuraCabinContext['weather']): void {
+    updateContext({ mode, vehicleState, speedKph, weather });
+    emit('scenario.selected', `Mode changed to ${mode}, ${vehicleState}, ${speedKph} km/h, weather ${weather}`);
   }
 
   function increaseRoofEnergy(): void {
-    setSurfaces((previous) => previous.map((surface) => surface.id === 'roof' ? { ...surface, energy: Math.min(100, surface.energy + 15), state: 'interactive' } : surface));
-    emit('surface.energy.changed', 'Digital Roof energy increased');
+    const roof = surfaceRegistry.get('roof');
+    surfaceRegistry.update('roof', { energy: Math.min(100, roof.energy + 15), state: 'interactive' });
+    setSurfaces(surfaceRegistry.list());
+    emit('surface.energy.changed', 'Digital Roof energy increased through Surface Registry');
   }
 
   function emergencyMode(): void {
-    setContext((previous) => ({ ...previous, mode: 'safety', vehicleState: 'driving', speedKph: 82, weather: 'rain' }));
+    updateContext({ mode: 'safety', vehicleState: 'driving', speedKph: 82, weather: 'rain' });
     emit('safety.envelope.critical', 'Critical safety envelope activated');
   }
 
@@ -117,7 +99,7 @@ function App() {
         <div>
           <p className="eyebrow">AURA DCOS · Phase C</p>
           <h1>AURA Studio</h1>
-          <p>First runnable app wiring together digital cabin context, surface energy and safety behaviour.</p>
+          <p>Runnable app connected to the DCOS Digital Twin and Surface Registry packages.</p>
         </div>
         <div className={`risk risk-${risk}`}>Risk: {risk}</div>
       </header>
@@ -147,7 +129,7 @@ function App() {
             {adjustedSurfaces.map((surface) => (
               <article className={`surface state-${surface.state}`} key={surface.id}>
                 <strong>{surface.name}</strong>
-                <span>{surface.kind}</span>
+                <span>{surface.kind} · {surface.priority}</span>
                 <meter min="0" max="100" value={surface.energy} />
                 <small>Energy {surface.energy} · {surface.state}</small>
               </article>
