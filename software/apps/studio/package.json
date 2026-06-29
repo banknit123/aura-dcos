@@ -1,0 +1,20 @@
+{
+  "name": "@aura-dcos/studio",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0",
+    "build": "tsc -p tsconfig.json && vite build",
+    "test": "vitest run --passWithNoTests",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@vitejs/plugin-react": "latest",
+    "vite": "latest",
+    "typescript": "^5.5.0",
+    "react": "latest",
+    "react-dom": "latest"
+  },
+  "devDependencies": {}
+}
