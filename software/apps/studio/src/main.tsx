@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { createAuraDigitalTwin, type AuraCabinContext } from '@aura-dcos/digital-twin';
 import { createAuraSurfaceRegistry, type AuraSurface } from '@aura-dcos/surfaces';
+import { OrchestrationPanel } from './OrchestrationPanel';
 import './styles.css';
 
 interface EventEntry {
@@ -239,6 +240,7 @@ function App() {
             <button onClick={() => runScenario('business', 'driving', 65, 'rain')}>Business + Rain</button>
             <button onClick={emergencyMode}>Emergency Safety</button>
           </div>
+          <OrchestrationPanel />
         </section>
 
         <section className="panel cabin">
