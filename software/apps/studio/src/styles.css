@@ -186,9 +186,134 @@ dd {
   margin: 0.3rem 0 0;
 }
 
+.output-screen {
+  min-height: 100vh;
+  padding: 4rem;
+  overflow: hidden;
+}
+
+.output-screen header p {
+  color: #9fb4c8;
+}
+
+.driver-cluster {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+  margin-top: 4rem;
+}
+
+.driver-cluster div {
+  min-height: 280px;
+  border-radius: 2rem;
+  padding: 2rem;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  display: grid;
+  place-items: center;
+  text-align: center;
+}
+
+.driver-cluster span,
+.driver-cluster small {
+  color: #9fb4c8;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+
+.driver-cluster strong {
+  font-size: clamp(3rem, 9vw, 8rem);
+  text-transform: uppercase;
+}
+
+.ambient-stage,
+.aura-presence,
+.floor-path {
+  position: relative;
+  margin-top: 3rem;
+  min-height: 65vh;
+  border-radius: 3rem;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.ambient-stage p,
+.aura-presence p,
+.floor-path p {
+  position: relative;
+  z-index: 2;
+  font-size: clamp(2rem, 4vw, 5rem);
+  font-weight: 800;
+  text-align: center;
+}
+
+.orb {
+  position: absolute;
+  border-radius: 999px;
+  filter: blur(12px);
+  opacity: 0.78;
+}
+
+.orb-a {
+  width: 420px;
+  height: 420px;
+  background: rgba(94, 231, 255, 0.3);
+  left: 8%;
+  top: 12%;
+}
+
+.orb-b {
+  width: 520px;
+  height: 520px;
+  background: rgba(164, 119, 255, 0.26);
+  right: 8%;
+  bottom: 8%;
+}
+
+.orb-c {
+  width: 280px;
+  height: 280px;
+  background: rgba(105, 255, 177, 0.2);
+  left: 45%;
+  bottom: 18%;
+}
+
+.aura-avatar {
+  width: 260px;
+  height: 260px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 9rem;
+  font-weight: 900;
+  background: radial-gradient(circle, rgba(94, 231, 255, 0.95), rgba(164, 119, 255, 0.36));
+  box-shadow: 0 0 120px rgba(94, 231, 255, 0.5);
+}
+
+.floor-path {
+  grid-template-columns: repeat(3, minmax(160px, 1fr));
+  gap: 2rem;
+  padding: 3rem;
+}
+
+.floor-path div {
+  height: 220px;
+  border-radius: 2rem;
+  background: linear-gradient(180deg, rgba(94, 231, 255, 0.08), rgba(94, 231, 255, 0.55));
+  box-shadow: 0 0 80px rgba(94, 231, 255, 0.35);
+}
+
+.floor-path p {
+  grid-column: 1 / -1;
+}
+
 @media (max-width: 1180px) {
   .grid,
-  .hero {
+  .hero,
+  .driver-cluster {
     grid-template-columns: 1fr;
     flex-direction: column;
     align-items: flex-start;
