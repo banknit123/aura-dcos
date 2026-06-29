@@ -11,6 +11,8 @@ interface EventEntry {
   message: string;
 }
 
+type OutputRoute = 'controller' | 'dashboard' | 'roof' | 'projection' | 'floor';
+
 const initialContext: AuraCabinContext = {
   mode: 'family',
   vehicleState: 'parked',
@@ -30,6 +32,12 @@ const initialSurfaces: AuraSurface[] = [
 
 function now(): string {
   return new Date().toLocaleTimeString();
+}
+
+function currentRoute(): OutputRoute {
+  const route = new URLSearchParams(window.location.search).get('output');
+  if (route === 'dashboard' || route === 'roof' || route === 'projection' || route === 'floor') return route;
+  return 'controller';
 }
 
 function createInitialSurfaceRegistry() {
@@ -54,7 +62,82 @@ function applySafetyRules(surfaces: AuraSurface[], risk: 'normal' | 'elevated' |
   });
 }
 
+function OutputShell({ title, subtitle, children }: { title: string; subtitle: string; children: React.ReactNode }) {
+  return (
+    <main className="output-screen">
+      <header>
+        <p className="eyebrow">AURA Output</p>
+        <h1>{title}</h1>
+        <p>{subtitle}</p>
+      </header>
+      {children}
+    </main>
+  );
+}
+
+function DashboardOutput({ context, risk }: { context: AuraCabinContext; risk: string }) {
+  return (
+    <OutputShell title="Driver Dashboard" subtitle="Driver-safe primary display output">
+      <section className={`driver-cluster risk-${risk}`}>
+        <div>
+          <span>Speed</span>
+          <strong>{context.speedKph}</strong>
+          <small>km/h</small>
+        </div>
+        <div>
+          <span>Mode</span>
+          <strong>{context.mode}</strong>
+          <small>{context.vehicleState}</small>
+        </div>
+        <div>
+          <span>Safety</span>
+          <strong>{risk}</strong>
+          <small>{context.weather}</small>
+        </div>
+      </section>
+    </OutputShell>
+  );
+}
+
+function RoofOutput({ context, risk }: { context: AuraCabinContext; risk: string }) {
+  return (
+    <OutputShell title="Digital Roof" subtitle="Immersive passenger ceiling output">
+      <section className={`ambient-stage ${context.mode} risk-${risk}`}>
+        <div className="orb orb-a" />
+        <div className="orb orb-b" />
+        <div className="orb orb-c" />
+        <p>{risk === 'critical' ? 'Safety-dimmed roof ambience' : `${context.mode} ambience active`}</p>
+      </section>
+    </OutputShell>
+  );
+}
+
+function ProjectionOutput({ risk }: { risk: string }) {
+  return (
+    <OutputShell title="AURA Presence" subtitle="Projection / virtual companion output">
+      <section className={`aura-presence risk-${risk}`}>
+        <div className="aura-avatar">A</div>
+        <p>{risk === 'critical' ? 'Voice-only mode' : 'Hello, I am AURA.'}</p>
+      </section>
+    </OutputShell>
+  );
+}
+
+function FloorOutput({ risk }: { risk: string }) {
+  return (
+    <OutputShell title="Digital Floor" subtitle="Guidance, entry path and emergency wayfinding output">
+      <section className={`floor-path risk-${risk}`}>
+        <div />
+        <div />
+        <div />
+        <p>{risk === 'critical' ? 'Emergency exit path' : 'Welcome path active'}</p>
+      </section>
+    </OutputShell>
+  );
+}
+
 function App() {
+  const route = currentRoute();
   const [twin] = useState(() => createAuraDigitalTwin(initialContext));
   const [surfaceRegistry] = useState(createInitialSurfaceRegistry);
   const [context, setContext] = useState<AuraCabinContext>(initialContext);
@@ -65,6 +148,11 @@ function App() {
 
   const risk = twin.riskLevel();
   const adjustedSurfaces = useMemo(() => applySafetyRules(surfaces, risk), [surfaces, risk]);
+
+  if (route === 'dashboard') return <DashboardOutput context={context} risk={risk} />;
+  if (route === 'roof') return <RoofOutput context={context} risk={risk} />;
+  if (route === 'projection') return <ProjectionOutput risk={risk} />;
+  if (route === 'floor') return <FloorOutput risk={risk} />;
 
   function emit(type: string, message: string): void {
     setEvents((previous) => [{ timestamp: now(), type, source: 'studio', message }, ...previous].slice(0, 12));
@@ -93,13 +181,18 @@ function App() {
     emit('safety.envelope.critical', 'Critical safety envelope activated');
   }
 
+  function openOutput(output: OutputRoute): void {
+    window.open(`${window.location.origin}${window.location.pathname}?output=${output}`, '_blank', 'popup=yes,width=1280,height=720');
+    emit('output.opened', `Opened ${output} output window`);
+  }
+
   return (
     <main className="app">
       <header className="hero">
         <div>
-          <p className="eyebrow">AURA DCOS · Phase C</p>
+          <p className="eyebrow">AURA DCOS · Phase D</p>
           <h1>AURA Studio</h1>
-          <p>Runnable app connected to the DCOS Digital Twin and Surface Registry packages.</p>
+          <p>Controller for multi-screen dashboard, roof, projection and floor outputs.</p>
         </div>
         <div className={`risk risk-${risk}`}>Risk: {risk}</div>
       </header>
@@ -139,6 +232,13 @@ function App() {
         </section>
 
         <section className="panel">
+          <h2>Output Windows</h2>
+          <div className="actions">
+            <button onClick={() => openOutput('dashboard')}>Open Dashboard Output</button>
+            <button onClick={() => openOutput('roof')}>Open Roof Output</button>
+            <button onClick={() => openOutput('projection')}>Open AURA Projection Output</button>
+            <button onClick={() => openOutput('floor')}>Open Floor Output</button>
+          </div>
           <h2>Runtime Event Log</h2>
           <div className="events">
             {events.map((event, index) => (
