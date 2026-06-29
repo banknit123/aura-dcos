@@ -15,7 +15,8 @@ The project combines:
 ```text
 aura-dcos/
 ├── docs/
-│   └── engineering/
+│   ├── engineering/
+│   └── software/
 ├── software/
 │   ├── apps/
 │   ├── packages/
@@ -27,10 +28,35 @@ aura-dcos/
 
 ## Current Build
 
-**Build 001** establishes the repository foundation.
+**Phase A: Core Runtime** is complete at foundation level.
 
-Next build: DCOS Kernel, Event Bus, Logger, Surface Manager and HAL.
+Included packages:
+
+- `@aura-dcos/kernel`
+- `@aura-dcos/events`
+- `@aura-dcos/logger`
+- `@aura-dcos/config`
+- `@aura-dcos/runtime`
+
+## Commands
+
+```bash
+npm install
+npm run typecheck
+npm test
+npm run build
+```
 
 ## Project Principle
 
 Every digital surface must either improve safety, reduce cognitive load, increase comfort, provide useful information, create a memorable experience, or disappear.
+
+## Next Phase
+
+Phase B will add the cabin foundation:
+
+- Surface Manager
+- Hardware Abstraction Layer
+- Display Registry
+- Digital Twin Engine
+- Plugin SDK
