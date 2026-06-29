@@ -30,9 +30,11 @@ aura-dcos/
 
 **Phase A: Core Runtime** is complete at foundation level.
 
-**Phase B: Cabin Foundation** has started and includes the first cabin-specific packages.
+**Phase B: Cabin Foundation** includes the first cabin-specific packages.
 
-**Phase C: AURA Studio** has started with the first runnable browser app.
+**Phase C: AURA Studio** includes the first runnable browser app and multi-output routes.
+
+**Phase D: Orchestration Foundation** adds synchronisation, scene, routing and animation packages.
 
 Included packages:
 
@@ -45,6 +47,10 @@ Included packages:
 - `@aura-dcos/hal`
 - `@aura-dcos/digital-twin`
 - `@aura-dcos/capabilities`
+- `@aura-dcos/cabin-sync`
+- `@aura-dcos/scenes`
+- `@aura-dcos/display-router`
+- `@aura-dcos/animation-engine`
 
 Included apps:
 
@@ -64,6 +70,15 @@ Run AURA Studio:
 npm run dev --workspace @aura-dcos/studio
 ```
 
+Open output windows from the Studio controller, or directly use:
+
+```text
+?output=dashboard
+?output=roof
+?output=projection
+?output=floor
+```
+
 Quality checks:
 
 ```bash
@@ -78,4 +93,4 @@ Every digital surface must either improve safety, reduce cognitive load, increas
 
 ## Next Phase
 
-Phase C should continue by replacing local UI logic with direct imports from the DCOS packages and adding multi-screen output pages.
+Phase E should integrate the orchestration packages into Studio so the controller can drive synchronised cabin scenes across all output windows.
