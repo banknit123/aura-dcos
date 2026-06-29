@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { createAuraDigitalTwin, type AuraCabinContext } from '@aura-dcos/digital-twin';
 import { createAuraSurfaceRegistry, type AuraSurface } from '@aura-dcos/surfaces';
@@ -12,6 +12,15 @@ interface EventEntry {
 }
 
 type OutputRoute = 'controller' | 'dashboard' | 'roof' | 'projection' | 'floor';
+
+interface StudioSharedState {
+  context: AuraCabinContext;
+  surfaces: AuraSurface[];
+  updatedAt: string;
+}
+
+const STORAGE_KEY = 'aura-dcos-studio-state';
+const CHANNEL_NAME = 'aura-dcos-studio-channel';
 
 const initialContext: AuraCabinContext = {
   mode: 'family',
@@ -40,24 +49,39 @@ function currentRoute(): OutputRoute {
   return 'controller';
 }
 
-function createInitialSurfaceRegistry() {
+function defaultState(): StudioSharedState {
+  return { context: initialContext, surfaces: initialSurfaces, updatedAt: new Date().toISOString() };
+}
+
+function readSharedState(): StudioSharedState {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    return raw ? (JSON.parse(raw) as StudioSharedState) : defaultState();
+  } catch {
+    return defaultState();
+  }
+}
+
+function saveSharedState(state: StudioSharedState, channel?: BroadcastChannel): void {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  channel?.postMessage(state);
+}
+
+function createInitialSurfaceRegistry(surfaces: AuraSurface[]) {
   const registry = createAuraSurfaceRegistry();
-  for (const surface of initialSurfaces) registry.register(surface);
+  for (const surface of surfaces) registry.register(surface);
   return registry;
+}
+
+function riskLevel(context: AuraCabinContext): 'normal' | 'elevated' | 'critical' {
+  return createAuraDigitalTwin(context).riskLevel();
 }
 
 function applySafetyRules(surfaces: AuraSurface[], risk: 'normal' | 'elevated' | 'critical'): AuraSurface[] {
   if (risk === 'normal') return surfaces;
-
   return surfaces.map((surface) => {
-    if (!surface.visibleToDriver) {
-      return { ...surface, state: 'ambient', energy: Math.min(surface.energy, risk === 'critical' ? 10 : 25) };
-    }
-
-    if (risk === 'critical') {
-      return { ...surface, state: surface.id === 'projection' ? 'off' : 'emergency', energy: surface.id === 'projection' ? 0 : 95 };
-    }
-
+    if (!surface.visibleToDriver) return { ...surface, state: 'ambient', energy: Math.min(surface.energy, risk === 'critical' ? 10 : 25) };
+    if (risk === 'critical') return { ...surface, state: surface.id === 'projection' ? 'off' : 'emergency', energy: surface.id === 'projection' ? 0 : 95 };
     return { ...surface, energy: Math.min(85, Math.max(surface.energy, 60)) };
   });
 }
@@ -77,23 +101,11 @@ function OutputShell({ title, subtitle, children }: { title: string; subtitle: s
 
 function DashboardOutput({ context, risk }: { context: AuraCabinContext; risk: string }) {
   return (
-    <OutputShell title="Driver Dashboard" subtitle="Driver-safe primary display output">
+    <OutputShell title="Driver Dashboard" subtitle="Live driver-safe primary display output">
       <section className={`driver-cluster risk-${risk}`}>
-        <div>
-          <span>Speed</span>
-          <strong>{context.speedKph}</strong>
-          <small>km/h</small>
-        </div>
-        <div>
-          <span>Mode</span>
-          <strong>{context.mode}</strong>
-          <small>{context.vehicleState}</small>
-        </div>
-        <div>
-          <span>Safety</span>
-          <strong>{risk}</strong>
-          <small>{context.weather}</small>
-        </div>
+        <div><span>Speed</span><strong>{context.speedKph}</strong><small>km/h</small></div>
+        <div><span>Mode</span><strong>{context.mode}</strong><small>{context.vehicleState}</small></div>
+        <div><span>Safety</span><strong>{risk}</strong><small>{context.weather}</small></div>
       </section>
     </OutputShell>
   );
@@ -101,7 +113,7 @@ function DashboardOutput({ context, risk }: { context: AuraCabinContext; risk: s
 
 function RoofOutput({ context, risk }: { context: AuraCabinContext; risk: string }) {
   return (
-    <OutputShell title="Digital Roof" subtitle="Immersive passenger ceiling output">
+    <OutputShell title="Digital Roof" subtitle="Live immersive passenger ceiling output">
       <section className={`ambient-stage ${context.mode} risk-${risk}`}>
         <div className="orb orb-a" />
         <div className="orb orb-b" />
@@ -114,7 +126,7 @@ function RoofOutput({ context, risk }: { context: AuraCabinContext; risk: string
 
 function ProjectionOutput({ risk }: { risk: string }) {
   return (
-    <OutputShell title="AURA Presence" subtitle="Projection / virtual companion output">
+    <OutputShell title="AURA Presence" subtitle="Live projection / virtual companion output">
       <section className={`aura-presence risk-${risk}`}>
         <div className="aura-avatar">A</div>
         <p>{risk === 'critical' ? 'Voice-only mode' : 'Hello, I am AURA.'}</p>
@@ -125,7 +137,7 @@ function ProjectionOutput({ risk }: { risk: string }) {
 
 function FloorOutput({ risk }: { risk: string }) {
   return (
-    <OutputShell title="Digital Floor" subtitle="Guidance, entry path and emergency wayfinding output">
+    <OutputShell title="Digital Floor" subtitle="Live guidance and emergency wayfinding output">
       <section className={`floor-path risk-${risk}`}>
         <div />
         <div />
@@ -138,19 +150,31 @@ function FloorOutput({ risk }: { risk: string }) {
 
 function App() {
   const route = currentRoute();
-  const [twin] = useState(() => createAuraDigitalTwin(initialContext));
-  const [surfaceRegistry] = useState(createInitialSurfaceRegistry);
-  const [context, setContext] = useState<AuraCabinContext>(initialContext);
-  const [surfaces, setSurfaces] = useState<AuraSurface[]>(surfaceRegistry.list());
+  const [channel] = useState(() => (typeof BroadcastChannel === 'undefined' ? undefined : new BroadcastChannel(CHANNEL_NAME)));
+  const [shared, setShared] = useState<StudioSharedState>(() => readSharedState());
   const [events, setEvents] = useState<EventEntry[]>([
     { timestamp: now(), type: 'kernel.running', source: 'studio', message: 'AURA DCOS Studio booted' },
   ]);
 
-  const risk = twin.riskLevel();
-  const adjustedSurfaces = useMemo(() => applySafetyRules(surfaces, risk), [surfaces, risk]);
+  useEffect(() => {
+    if (!channel) return;
+    channel.onmessage = (message) => setShared(message.data as StudioSharedState);
+    return () => channel.close();
+  }, [channel]);
 
-  if (route === 'dashboard') return <DashboardOutput context={context} risk={risk} />;
-  if (route === 'roof') return <RoofOutput context={context} risk={risk} />;
+  useEffect(() => {
+    const onStorage = (event: StorageEvent) => {
+      if (event.key === STORAGE_KEY) setShared(readSharedState());
+    };
+    window.addEventListener('storage', onStorage);
+    return () => window.removeEventListener('storage', onStorage);
+  }, []);
+
+  const risk = riskLevel(shared.context);
+  const adjustedSurfaces = useMemo(() => applySafetyRules(shared.surfaces, risk), [shared.surfaces, risk]);
+
+  if (route === 'dashboard') return <DashboardOutput context={shared.context} risk={risk} />;
+  if (route === 'roof') return <RoofOutput context={shared.context} risk={risk} />;
   if (route === 'projection') return <ProjectionOutput risk={risk} />;
   if (route === 'floor') return <FloorOutput risk={risk} />;
 
@@ -158,27 +182,28 @@ function App() {
     setEvents((previous) => [{ timestamp: now(), type, source: 'studio', message }, ...previous].slice(0, 12));
   }
 
-  function updateContext(update: Partial<AuraCabinContext>): void {
-    const snapshot = twin.update(update);
-    setContext(snapshot.context);
-    emit('digitalTwin.updated', `Context updated. Risk is now ${twin.riskLevel()}`);
+  function updateShared(next: StudioSharedState, eventType: string, message: string): void {
+    setShared(next);
+    saveSharedState(next, channel);
+    emit(eventType, message);
   }
 
   function runScenario(mode: AuraCabinContext['mode'], vehicleState: AuraCabinContext['vehicleState'], speedKph: number, weather: AuraCabinContext['weather']): void {
-    updateContext({ mode, vehicleState, speedKph, weather });
-    emit('scenario.selected', `Mode changed to ${mode}, ${vehicleState}, ${speedKph} km/h, weather ${weather}`);
+    const next = { ...shared, context: { ...shared.context, mode, vehicleState, speedKph, weather }, updatedAt: new Date().toISOString() };
+    updateShared(next, 'scenario.selected', `Broadcast ${mode} scenario to all outputs`);
   }
 
   function increaseRoofEnergy(): void {
-    const roof = surfaceRegistry.get('roof');
-    surfaceRegistry.update('roof', { energy: Math.min(100, roof.energy + 15), state: 'interactive' });
-    setSurfaces(surfaceRegistry.list());
-    emit('surface.energy.changed', 'Digital Roof energy increased through Surface Registry');
+    const registry = createInitialSurfaceRegistry(shared.surfaces);
+    const roof = registry.get('roof');
+    registry.update('roof', { energy: Math.min(100, roof.energy + 15), state: 'interactive' });
+    const next = { ...shared, surfaces: registry.list(), updatedAt: new Date().toISOString() };
+    updateShared(next, 'surface.energy.changed', 'Broadcast Digital Roof energy change');
   }
 
   function emergencyMode(): void {
-    updateContext({ mode: 'safety', vehicleState: 'driving', speedKph: 82, weather: 'rain' });
-    emit('safety.envelope.critical', 'Critical safety envelope activated');
+    const next = { ...shared, context: { ...shared.context, mode: 'safety', vehicleState: 'driving', speedKph: 82, weather: 'rain' }, updatedAt: new Date().toISOString() };
+    updateShared(next, 'safety.envelope.critical', 'Broadcast critical safety mode to all outputs');
   }
 
   function openOutput(output: OutputRoute): void {
@@ -190,9 +215,9 @@ function App() {
     <main className="app">
       <header className="hero">
         <div>
-          <p className="eyebrow">AURA DCOS · Phase D</p>
+          <p className="eyebrow">AURA DCOS · Phase E</p>
           <h1>AURA Studio</h1>
-          <p>Controller for multi-screen dashboard, roof, projection and floor outputs.</p>
+          <p>Synchronised controller for live dashboard, roof, projection and floor outputs.</p>
         </div>
         <div className={`risk risk-${risk}`}>Risk: {risk}</div>
       </header>
@@ -201,12 +226,12 @@ function App() {
         <section className="panel">
           <h2>Digital Twin Context</h2>
           <dl>
-            <div><dt>Mode</dt><dd>{context.mode}</dd></div>
-            <div><dt>Vehicle</dt><dd>{context.vehicleState}</dd></div>
-            <div><dt>Speed</dt><dd>{context.speedKph} km/h</dd></div>
-            <div><dt>Weather</dt><dd>{context.weather}</dd></div>
-            <div><dt>Occupants</dt><dd>{context.occupants}</dd></div>
-            <div><dt>Child Present</dt><dd>{context.childPresent ? 'Yes' : 'No'}</dd></div>
+            <div><dt>Mode</dt><dd>{shared.context.mode}</dd></div>
+            <div><dt>Vehicle</dt><dd>{shared.context.vehicleState}</dd></div>
+            <div><dt>Speed</dt><dd>{shared.context.speedKph} km/h</dd></div>
+            <div><dt>Weather</dt><dd>{shared.context.weather}</dd></div>
+            <div><dt>Occupants</dt><dd>{shared.context.occupants}</dd></div>
+            <div><dt>Child Present</dt><dd>{shared.context.childPresent ? 'Yes' : 'No'}</dd></div>
           </dl>
           <div className="actions">
             <button onClick={() => runScenario('family', 'parked', 0, 'clear')}>Welcome / Family</button>
