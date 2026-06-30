@@ -22,7 +22,7 @@ export interface AutonomyMemoryItem {
 export interface AutonomyCabinSnapshot {
   vehicleState: 'parked' | 'driving';
   speedKph: number;
-  weather: 'clear' | 'rain' | 'night' | 'fog';
+  weather: 'clear' | 'rain' | 'fog';
   driverAttention: 'parked' | 'lowLoad' | 'mediumLoad' | 'highLoad' | 'critical';
   childPresent: boolean;
   occupants: number;
