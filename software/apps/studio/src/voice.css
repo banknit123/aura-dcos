@@ -16,21 +16,49 @@
   font: inherit;
 }
 
-.voice-response {
+.voice-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  align-items: center;
+}
+
+.voice-panel button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.voice-status {
+  display: block;
+  margin-top: 0.65rem;
+  color: #9fb4c8;
+}
+
+.voice-response,
+.voice-trace {
   margin-top: 0.75rem;
   padding: 1rem;
   border-radius: 1rem;
   display: grid;
   gap: 0.35rem;
   background: rgba(255, 255, 255, 0.04);
+}
+
+.voice-response {
   border: 1px solid rgba(94, 231, 255, 0.22);
 }
 
-.voice-response p {
+.voice-trace {
+  border: 1px dashed rgba(159, 180, 200, 0.45);
+}
+
+.voice-response p,
+.voice-trace p {
   margin: 0;
 }
 
-.voice-response small {
+.voice-response small,
+.voice-trace small {
   color: #9fb4c8;
 }
 
