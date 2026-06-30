@@ -10,11 +10,12 @@ interface BrainPanelProps {
   surfaces: AuraSurface[];
   risk: BrainRisk;
   driverAttention: DriverAttentionState;
+  onExecuteDecision: (decision: BrainDecision) => void;
 }
 
 const intents: BrainIntent[] = ['welcome', 'navigate', 'entertain', 'assist', 'calm', 'emergency', 'unknown'];
 
-export function BrainPanel({ context, surfaces, risk, driverAttention }: BrainPanelProps) {
+export function BrainPanel({ context, surfaces, risk, driverAttention, onExecuteDecision }: BrainPanelProps) {
   const brain = useMemo(() => createAuraBrain(), []);
   const [intent, setIntent] = useState<BrainIntent>('assist');
   const decision: BrainDecision = brain.decide({
@@ -29,11 +30,11 @@ export function BrainPanel({ context, surfaces, risk, driverAttention }: BrainPa
   return (
     <section className="brain-panel">
       <h2>AURA Brain</h2>
-      <p className="muted">Safe intent reasoning and output planning.</p>
+      <p className="muted">Safety-first intent reasoning and output planning.</p>
 
-      <div className="director-state-buttons">
+      <div className="director-state-buttons brain-intents">
         {intents.map((nextIntent) => (
-          <button key={nextIntent} onClick={() => setIntent(nextIntent)}>
+          <button key={nextIntent} className={intent === nextIntent ? 'selected' : ''} onClick={() => setIntent(nextIntent)}>
             {nextIntent}
           </button>
         ))}
@@ -48,17 +49,19 @@ export function BrainPanel({ context, surfaces, risk, driverAttention }: BrainPa
         <article>
           <strong>Recommended Actions</strong>
           {decision.actions.map((action, index) => (
-            <small key={`${action.kind}-${action.target}-${index}`}>{action.kind} → {action.target}: {String(action.value)}</small>
+            <small key={`${action.kind}-${action.target}-${index}`}>{action.kind} → {action.target}: {String(action.value)} — {action.reason}</small>
           ))}
         </article>
         <article>
           <strong>Blocked Actions</strong>
           {decision.blockedActions.length === 0 ? <small>None</small> : null}
           {decision.blockedActions.map((action, index) => (
-            <small key={`${action.kind}-${action.target}-${index}`}>{action.kind} → {action.target}: {String(action.value)}</small>
+            <small key={`${action.kind}-${action.target}-${index}`}>{action.kind} → {action.target}: {String(action.value)} — {action.reason}</small>
           ))}
         </article>
       </div>
+
+      <button onClick={() => onExecuteDecision(decision)}>Apply Brain Decision</button>
     </section>
   );
 }
