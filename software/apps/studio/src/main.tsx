@@ -142,6 +142,38 @@ function contextFromSignals(context: AuraCabinContext, signals: AutonomySignal[]
   return next;
 }
 
+function applyBrainDecisionToState(base: StudioSharedState, decision: BrainDecision): StudioSharedState {
+  let nextSurfaces = [...base.surfaces];
+  let nextCompanion = { ...base.companion };
+
+  for (const action of decision.actions) {
+    if (action.kind === 'setSurfaceState' && typeof action.value === 'string') {
+      nextSurfaces = nextSurfaces.map((surface) => surface.id === action.target ? { ...surface, state: action.value as SurfaceState } : surface);
+    }
+
+    if (action.kind === 'reduceMotion') {
+      nextSurfaces = nextSurfaces.map((surface) => action.target === 'all' || surface.id === action.target ? { ...surface, energy: Math.min(surface.energy, 25) } : surface);
+    }
+
+    if (action.kind === 'setCompanionMode' && typeof action.value === 'string') {
+      const mode = action.value === 'friendly' ? 'visual' : action.value as CompanionState['mode'];
+      nextCompanion = {
+        ...nextCompanion,
+        mode,
+        mood: action.value === 'emergency' ? 'emergency' : action.value === 'voiceOnly' ? 'focused' : action.value === 'friendly' ? 'friendly' : nextCompanion.mood,
+        allowVisualMotion: mode !== 'emergency' && mode !== 'voiceOnly',
+        animationLevel: mode === 'emergency' || mode === 'voiceOnly' ? 0 : nextCompanion.animationLevel,
+      };
+    }
+
+    if (action.kind === 'speak' || action.kind === 'showMessage') {
+      nextCompanion = { ...nextCompanion, message: String(action.value) };
+    }
+  }
+
+  return { ...base, surfaces: nextSurfaces, companion: nextCompanion, updatedAt: new Date().toISOString() };
+}
+
 function OutputShell({ title, subtitle, children }: { title: string; subtitle: string; children: React.ReactNode }) {
   return (
     <main className="output-screen">
@@ -290,34 +322,7 @@ function App() {
   }
 
   function executeBrainDecision(decision: BrainDecision): void {
-    let nextSurfaces = [...shared.surfaces];
-    let nextCompanion = { ...shared.companion };
-
-    for (const action of decision.actions) {
-      if (action.kind === 'setSurfaceState' && typeof action.value === 'string') {
-        nextSurfaces = nextSurfaces.map((surface) => surface.id === action.target ? { ...surface, state: action.value as SurfaceState } : surface);
-      }
-
-      if (action.kind === 'reduceMotion' && action.target === 'all') {
-        nextSurfaces = nextSurfaces.map((surface) => surface.visibleToDriver ? surface : { ...surface, energy: Math.min(surface.energy, 25) });
-      }
-
-      if (action.kind === 'setCompanionMode' && typeof action.value === 'string') {
-        nextCompanion = {
-          ...nextCompanion,
-          mode: action.value as CompanionState['mode'],
-          mood: action.value === 'emergency' ? 'emergency' : action.value === 'voiceOnly' ? 'focused' : nextCompanion.mood,
-          allowVisualMotion: action.value !== 'emergency' && action.value !== 'voiceOnly',
-          animationLevel: action.value === 'emergency' || action.value === 'voiceOnly' ? 0 : nextCompanion.animationLevel,
-        };
-      }
-
-      if (action.kind === 'speak' || action.kind === 'showMessage') {
-        nextCompanion = { ...nextCompanion, message: String(action.value) };
-      }
-    }
-
-    const next = { ...shared, surfaces: nextSurfaces, companion: nextCompanion, updatedAt: new Date().toISOString() };
+    const next = applyBrainDecisionToState(shared, decision);
     updateShared(next, 'brain.decision.executed', `Applied Brain decision: ${decision.summary}`);
   }
 
@@ -338,9 +343,10 @@ function App() {
       availableSurfaces: shared.surfaces.map((surface) => surface.id),
     }, signals);
 
-    const next = { ...shared, context: nextContext, updatedAt: new Date().toISOString() };
-    updateShared(next, 'simulator.signals.applied', `${source} produced ${signals.length} autonomy signals`);
-    handleAutonomyDecision(result);
+    const simulatorState = { ...shared, context: nextContext, updatedAt: new Date().toISOString() };
+    const next = applyBrainDecisionToState(simulatorState, result.brainDecision);
+    updateShared(next, 'simulator.signals.applied', `${source} produced ${signals.length} signals and applied Brain decision: ${result.brainDecision.summary}`);
+    emit('autonomy.cycle.completed', `Autonomy inferred ${result.inferredIntent} with ${result.risk} risk and ${result.suggestions.length} suggestions`);
   }
 
   function increaseRoofEnergy(): void {
@@ -370,9 +376,9 @@ function App() {
     <main className="app">
       <header className="hero">
         <div>
-          <p className="eyebrow">AURA DCOS · Phase P</p>
+          <p className="eyebrow">AURA DCOS · Demo Ready</p>
           <h1>AURA Studio</h1>
-          <p>Vehicle and sensor simulation streams feeding Integrations, Autonomy and AURA Brain.</p>
+          <p>Vehicle simulation, Voice, Autonomy, Brain and multi-surface outputs running through one local demo path.</p>
         </div>
         <div className={`risk risk-${risk}`}>Risk: {risk}</div>
       </header>
