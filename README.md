@@ -48,6 +48,8 @@ aura-dcos/
 
 **Phase J: AURA Companion** adds companion state, driver workload modes and projection behaviour.
 
+**Phase K: Build Hardening** adds validation scripts, health checks, CI hardening and release documentation.
+
 ## Included packages
 
 - `@aura-dcos/kernel`
@@ -108,12 +110,15 @@ Open output windows from the Studio controller, or directly use:
 ?output=calibration
 ```
 
-Quality checks:
+Quality and release checks:
 
 ```bash
+npm run validate
+npm run health
 npm run typecheck
 npm test
 npm run build
+npm run release:check
 ```
 
 ## AURA Director
@@ -127,6 +132,14 @@ The companion engine evaluates driver workload and safety state to choose visual
 ## Layout Profiles
 
 Studio can save and restore cabin layout profiles in browser storage. A saved profile currently includes the cabin context and surface configuration.
+
+## Release readiness
+
+See `docs/software/phase-k-release-checklist.md` before prototype demonstrations.
+
+## Known limitations
+
+See `docs/software/known-limitations.md` for current prototype limitations.
 
 ## Cleanup status
 
@@ -147,4 +160,4 @@ Every digital surface must either improve safety, reduce cognitive load, increas
 
 ## Next Phase
 
-Phase K should add validation, build hardening and a release checklist for running the prototype reliably.
+Phase L should add AURA Brain: an AI reasoning layer for intent, context and safe response planning.
