@@ -1,0 +1,41 @@
+.simulator-panel {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.simulator-field {
+  display: grid;
+  gap: 0.45rem;
+  margin: 0.75rem 0;
+  color: #d9ecff;
+}
+
+.simulator-field select {
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+  color: #eef8ff;
+  padding: 0.7rem 0.9rem;
+  font: inherit;
+}
+
+.simulator-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+}
+
+.simulator-signals {
+  margin-top: 0.85rem;
+  padding: 1rem;
+  border-radius: 1rem;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px dashed rgba(159, 180, 200, 0.45);
+  display: grid;
+  gap: 0.35rem;
+}
+
+.simulator-signals small {
+  color: #9fb4c8;
+}
