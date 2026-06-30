@@ -56,6 +56,8 @@ aura-dcos/
 
 **Phase N: Autonomous Cabin Intelligence** adds an autonomy engine with cabin memory, signal fusion, risk inference, proactive suggestions and AURA Brain gated execution.
 
+**Phase O: Provider and Vehicle Integration Layer** adds a provider registry, local/mock LLM and TTS adapters, a vehicle signal adapter contract and signal mapping into AURA Autonomy.
+
 ## Included packages
 
 - `@aura-dcos/kernel`
@@ -79,6 +81,7 @@ aura-dcos/
 - `@aura-dcos/voice-bridge`
 - `@aura-dcos/ai-adapter`
 - `@aura-dcos/autonomy`
+- `@aura-dcos/integrations`
 
 ## Included apps
 
@@ -170,6 +173,17 @@ Phase N introduces the first autonomous AI cabin loop:
 
 This is the foundation for future continuous sensing, local/edge AI, calendar context, occupant recognition and vehicle API integration.
 
+## Provider and Vehicle Integration Layer
+
+Phase O introduces the integration boundary for real-world providers:
+
+- `@aura-dcos/integrations` centralises provider registration and health status.
+- It includes mock and local language-model adapters that can replace the default Voice Bridge mock without changing Studio or Autonomy contracts.
+- It includes mock and local text-to-speech adapters for browser, edge or cloud expansion.
+- It defines a vehicle adapter contract for speed, weather, fatigue, seatbelt, door and battery-style signals.
+- Vehicle signals can be converted into `@aura-dcos/autonomy` signals so provider data still flows through Autonomy and AURA Brain before cabin outputs change.
+- No cloud keys or paid APIs are required for the current repository build.
+
 ## Layout Profiles
 
 Studio can save and restore cabin layout profiles in browser storage. A saved profile currently includes the cabin context and surface configuration.
@@ -201,4 +215,4 @@ Every digital surface must either improve safety, reduce cognitive load, increas
 
 ## Next Phase
 
-Phase O should add real cloud, edge and local provider adapters for LLM, speech, vehicle and sensor systems while keeping Voice Bridge, Autonomy and AURA Brain as safety gates before responses reach cabin outputs.
+Phase P should add concrete provider implementations for selected cloud, local and edge services, plus a development simulator for vehicle and sensor streams.
