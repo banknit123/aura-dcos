@@ -52,6 +52,8 @@ aura-dcos/
 
 **Phase L: AURA Brain** adds safe intent reasoning and output planning.
 
+**Phase M: Voice and LLM Bridge** adds safety-gated voice and language-model adapter interfaces.
+
 ## Included packages
 
 - `@aura-dcos/kernel`
@@ -72,6 +74,8 @@ aura-dcos/
 - `@aura-dcos/profile-store`
 - `@aura-dcos/companion`
 - `@aura-dcos/brain`
+- `@aura-dcos/voice-bridge`
+- `@aura-dcos/ai-adapter`
 
 ## Included apps
 
@@ -136,6 +140,10 @@ The companion engine evaluates driver workload and safety state to choose visual
 
 AURA Brain evaluates intent, driver workload, vehicle state, risk and available surfaces. It recommends safe output actions and blocks distracting or unsafe actions such as driver-visible entertainment while driving.
 
+## Voice and LLM Bridge
+
+The voice bridge defines the adapter boundary for future microphone, speech-to-text, text-to-speech and LLM integrations. Studio can simulate a prompt, produce a mock language-model response, safety-gate it, and apply the safe response to AURA Companion / Projection.
+
 ## Layout Profiles
 
 Studio can save and restore cabin layout profiles in browser storage. A saved profile currently includes the cabin context and surface configuration.
@@ -167,4 +175,4 @@ Every digital surface must either improve safety, reduce cognitive load, increas
 
 ## Next Phase
 
-Phase M should add voice and LLM adapter interfaces while keeping AURA Brain as the safety gate before responses reach cabin outputs.
+Phase N should add real provider adapters for speech-to-text, text-to-speech and LLM services while keeping AURA Brain and Voice Bridge as safety gates before responses reach cabin outputs.
