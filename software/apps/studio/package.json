@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@aura-dcos/animation-engine": "0.1.0",
+    "@aura-dcos/brain": "0.1.0",
     "@aura-dcos/cabin-sync": "0.1.0",
     "@aura-dcos/calibration": "0.1.0",
     "@aura-dcos/companion": "0.1.0",
