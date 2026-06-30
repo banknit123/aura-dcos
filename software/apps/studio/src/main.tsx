@@ -1,11 +1,11 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import { type AutonomyCycleResult } from '@aura-dcos/autonomy';
+import { createAuraAutonomyEngine, type AutonomyCycleResult, type AutonomySignal } from '@aura-dcos/autonomy';
 import { type BrainDecision } from '@aura-dcos/brain';
-import { createAuraDigitalTwin, type AuraCabinContext } from '@aura-dcos/digital-twin';
 import { type CompanionState, type DriverAttentionState } from '@aura-dcos/companion';
-import { type SafeVoiceResponse } from '@aura-dcos/voice-bridge';
+import { createAuraDigitalTwin, type AuraCabinContext } from '@aura-dcos/digital-twin';
 import { createAuraSurfaceRegistry, type AuraSurface, type SurfaceState } from '@aura-dcos/surfaces';
+import { type SafeVoiceResponse } from '@aura-dcos/voice-bridge';
 import { AuraDirector } from './AuraDirector';
 import { AutonomyPanel } from './AutonomyPanel';
 import { BrainPanel } from './BrainPanel';
@@ -14,6 +14,7 @@ import { CompanionPanel } from './CompanionPanel';
 import { OrchestrationPanel } from './OrchestrationPanel';
 import { OutputManagerPanel } from './OutputManagerPanel';
 import { ProfilePanel, type StudioProfileData } from './ProfilePanel';
+import { SimulatorPanel } from './SimulatorPanel';
 import { VoiceBridgePanel } from './VoiceBridgePanel';
 import './styles.css';
 
@@ -128,6 +129,19 @@ function applySafetyRules(surfaces: AuraSurface[], risk: 'normal' | 'elevated' |
   });
 }
 
+function contextFromSignals(context: AuraCabinContext, signals: AutonomySignal[]): AuraCabinContext {
+  let next = { ...context };
+  for (const signal of signals) {
+    if (signal.id === 'speed' && typeof signal.value === 'number') {
+      next = { ...next, speedKph: signal.value, vehicleState: signal.value > 0 ? 'driving' : 'parked' };
+    }
+    if (signal.id === 'weather-rain' && signal.value === 'rain') {
+      next = { ...next, weather: 'rain' };
+    }
+  }
+  return next;
+}
+
 function OutputShell({ title, subtitle, children }: { title: string; subtitle: string; children: React.ReactNode }) {
   return (
     <main className="output-screen">
@@ -196,6 +210,7 @@ function App() {
   const [channel] = useState(() => (typeof BroadcastChannel === 'undefined' ? undefined : new BroadcastChannel(CHANNEL_NAME)));
   const [shared, setShared] = useState<StudioSharedState>(() => readSharedState());
   const [selectedSurfaceId, setSelectedSurfaceId] = useState('dashboard');
+  const [autonomyEngine] = useState(() => createAuraAutonomyEngine());
   const [events, setEvents] = useState<EventEntry[]>([
     { timestamp: now(), type: 'kernel.running', source: 'studio', message: 'AURA DCOS Studio booted' },
   ]);
@@ -308,7 +323,24 @@ function App() {
 
   function handleAutonomyDecision(result: AutonomyCycleResult): void {
     executeBrainDecision(result.brainDecision);
-    emit('autonomy.cycle.completed', `Phase N autonomy inferred ${result.inferredIntent} with ${result.risk} risk and ${result.suggestions.length} suggestions`);
+    emit('autonomy.cycle.completed', `Autonomy inferred ${result.inferredIntent} with ${result.risk} risk and ${result.suggestions.length} suggestions`);
+  }
+
+  function handleSimulatorSignals(signals: AutonomySignal[], source: string): void {
+    const nextContext = contextFromSignals(shared.context, signals);
+    const result = autonomyEngine.runCycle({
+      vehicleState: nextContext.vehicleState,
+      speedKph: nextContext.speedKph,
+      weather: nextContext.weather,
+      driverAttention: shared.driverAttention,
+      childPresent: nextContext.childPresent,
+      occupants: nextContext.occupants,
+      availableSurfaces: shared.surfaces.map((surface) => surface.id),
+    }, signals);
+
+    const next = { ...shared, context: nextContext, updatedAt: new Date().toISOString() };
+    updateShared(next, 'simulator.signals.applied', `${source} produced ${signals.length} autonomy signals`);
+    handleAutonomyDecision(result);
   }
 
   function increaseRoofEnergy(): void {
@@ -338,9 +370,9 @@ function App() {
     <main className="app">
       <header className="hero">
         <div>
-          <p className="eyebrow">AURA DCOS · Phase N</p>
+          <p className="eyebrow">AURA DCOS · Phase P</p>
           <h1>AURA Studio</h1>
-          <p>Autonomous cabin intelligence with memory, prediction signals and AURA Brain safety orchestration.</p>
+          <p>Vehicle and sensor simulation streams feeding Integrations, Autonomy and AURA Brain.</p>
         </div>
         <div className={`risk risk-${risk}`}>Risk: {risk}</div>
       </header>
@@ -371,6 +403,7 @@ function App() {
             onCompanionState={updateCompanion}
           />
           <VoiceBridgePanel context={shared.context} risk={risk} driverAttention={shared.driverAttention} onSafeResponse={handleSafeVoiceResponse} />
+          <SimulatorPanel onSignals={handleSimulatorSignals} />
           <AutonomyPanel context={shared.context} surfaces={shared.surfaces} driverAttention={shared.driverAttention} onAutonomyDecision={handleAutonomyDecision} />
           <BrainPanel context={shared.context} surfaces={shared.surfaces} risk={risk} driverAttention={shared.driverAttention} onExecuteDecision={executeBrainDecision} />
           <OrchestrationPanel />
