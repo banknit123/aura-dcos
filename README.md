@@ -46,6 +46,8 @@ aura-dcos/
 
 **Phase I: Layout Profiles** adds browser-based save/load support for cabin surface layouts.
 
+**Phase J: AURA Companion** adds companion state, driver workload modes and projection behaviour.
+
 ## Included packages
 
 - `@aura-dcos/kernel`
@@ -64,6 +66,7 @@ aura-dcos/
 - `@aura-dcos/output-manager`
 - `@aura-dcos/calibration`
 - `@aura-dcos/profile-store`
+- `@aura-dcos/companion`
 
 ## Included apps
 
@@ -117,6 +120,10 @@ npm run build
 
 AURA Director provides a cabin-map control panel inside Studio. It can select surfaces such as windshield, dashboard, roof, projection and floor, then update energy and state. Updates are broadcast through the existing Studio shared-state channel so output windows can react.
 
+## AURA Companion
+
+The companion engine evaluates driver workload and safety state to choose visual, assistive, voice-only or emergency behaviour. Studio can send the selected companion state to the AURA projection output.
+
 ## Layout Profiles
 
 Studio can save and restore cabin layout profiles in browser storage. A saved profile currently includes the cabin context and surface configuration.
@@ -140,4 +147,4 @@ Every digital surface must either improve safety, reduce cognitive load, increas
 
 ## Next Phase
 
-Phase J should add the AURA companion state model and driver-safe interaction modes.
+Phase K should add validation, build hardening and a release checklist for running the prototype reliably.
