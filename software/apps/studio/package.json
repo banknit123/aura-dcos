@@ -13,6 +13,7 @@
     "@aura-dcos/animation-engine": "0.1.0",
     "@aura-dcos/cabin-sync": "0.1.0",
     "@aura-dcos/calibration": "0.1.0",
+    "@aura-dcos/companion": "0.1.0",
     "@aura-dcos/digital-twin": "0.1.0",
     "@aura-dcos/display-router": "0.1.0",
     "@aura-dcos/output-manager": "0.1.0",
