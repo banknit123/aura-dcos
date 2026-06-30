@@ -4,6 +4,7 @@ import { createAuraDigitalTwin, type AuraCabinContext } from '@aura-dcos/digital
 import { type CompanionState, type DriverAttentionState } from '@aura-dcos/companion';
 import { createAuraSurfaceRegistry, type AuraSurface, type SurfaceState } from '@aura-dcos/surfaces';
 import { AuraDirector } from './AuraDirector';
+import { BrainPanel } from './BrainPanel';
 import { CalibrationOutput } from './CalibrationOutput';
 import { CompanionPanel } from './CompanionPanel';
 import { OrchestrationPanel } from './OrchestrationPanel';
@@ -281,9 +282,9 @@ function App() {
     <main className="app">
       <header className="hero">
         <div>
-          <p className="eyebrow">AURA DCOS · Phase J</p>
+          <p className="eyebrow">AURA DCOS · Phase L</p>
           <h1>AURA Studio</h1>
-          <p>AURA companion state model with driver-safe projection behaviour.</p>
+          <p>AURA Brain reasoning layer with safe intent and output planning.</p>
         </div>
         <div className={`risk risk-${risk}`}>Risk: {risk}</div>
       </header>
@@ -313,6 +314,7 @@ function App() {
             onAttentionChange={updateDriverAttention}
             onCompanionState={updateCompanion}
           />
+          <BrainPanel context={shared.context} surfaces={shared.surfaces} risk={risk} driverAttention={shared.driverAttention} />
           <OrchestrationPanel />
         </section>
 
