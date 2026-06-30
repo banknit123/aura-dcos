@@ -16,6 +16,7 @@
     "@aura-dcos/digital-twin": "0.1.0",
     "@aura-dcos/display-router": "0.1.0",
     "@aura-dcos/output-manager": "0.1.0",
+    "@aura-dcos/profile-store": "0.1.0",
     "@aura-dcos/scenes": "0.1.0",
     "@aura-dcos/surfaces": "0.1.0",
     "@vitejs/plugin-react": "latest",
