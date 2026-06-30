@@ -122,7 +122,7 @@ function riskLevel(context: AuraCabinContext): 'normal' | 'elevated' | 'critical
 
 function applySafetyRules(surfaces: AuraSurface[], risk: 'normal' | 'elevated' | 'critical'): AuraSurface[] {
   if (risk === 'normal') return surfaces;
-  return surfaces.map((surface) => {
+  return surfaces.map((surface): AuraSurface => {
     if (!surface.visibleToDriver) return { ...surface, state: 'ambient', energy: Math.min(surface.energy, risk === 'critical' ? 10 : 25) };
     if (risk === 'critical') return { ...surface, state: surface.id === 'projection' ? 'off' : 'emergency', energy: surface.id === 'projection' ? 0 : 95 };
     return { ...surface, energy: Math.min(85, Math.max(surface.energy, 60)) };
@@ -281,29 +281,29 @@ function App() {
   }
 
   function runScenario(mode: AuraCabinContext['mode'], vehicleState: AuraCabinContext['vehicleState'], speedKph: number, weather: AuraCabinContext['weather']): void {
-    const next = { ...shared, context: { ...shared.context, mode, vehicleState, speedKph, weather }, updatedAt: new Date().toISOString() };
+    const next: StudioSharedState = { ...shared, context: { ...shared.context, mode, vehicleState, speedKph, weather }, updatedAt: new Date().toISOString() };
     updateShared(next, 'scenario.selected', `Broadcast ${mode} scenario to all outputs`);
   }
 
   function updateSurface(surfaceId: string, update: { state?: SurfaceState; energy?: number }): void {
     const registry = createInitialSurfaceRegistry(shared.surfaces);
     registry.update(surfaceId, update);
-    const next = { ...shared, surfaces: registry.list(), updatedAt: new Date().toISOString() };
+    const next: StudioSharedState = { ...shared, surfaces: registry.list(), updatedAt: new Date().toISOString() };
     updateShared(next, 'director.surface.updated', `Updated ${surfaceId} from AURA Director`);
   }
 
   function loadProfile(data: StudioProfileData): void {
-    const next = { ...shared, context: data.context, surfaces: data.surfaces, updatedAt: new Date().toISOString() };
+    const next: StudioSharedState = { ...shared, context: data.context, surfaces: data.surfaces, updatedAt: new Date().toISOString() };
     updateShared(next, 'profile.loaded', 'Loaded saved AURA layout profile');
   }
 
   function updateDriverAttention(driverAttention: DriverAttentionState): void {
-    const next = { ...shared, driverAttention, updatedAt: new Date().toISOString() };
+    const next: StudioSharedState = { ...shared, driverAttention, updatedAt: new Date().toISOString() };
     updateShared(next, 'companion.attention.changed', `Driver attention changed to ${driverAttention}`);
   }
 
   function updateCompanion(companion: CompanionState): void {
-    const next = { ...shared, companion, updatedAt: new Date().toISOString() };
+    const next: StudioSharedState = { ...shared, companion, updatedAt: new Date().toISOString() };
     updateShared(next, 'companion.state.updated', `AURA companion switched to ${companion.mode}`);
   }
 
@@ -317,7 +317,7 @@ function App() {
       allowVisualMotion: response.outputMode !== 'speech' && response.safety !== 'modified',
       animationLevel: response.safety === 'modified' ? 0 : shared.companion.animationLevel,
     };
-    const next = { ...shared, companion: nextCompanion, updatedAt: new Date().toISOString() };
+    const next: StudioSharedState = { ...shared, companion: nextCompanion, updatedAt: new Date().toISOString() };
     updateShared(next, 'voice.safe-response.applied', `Voice Bridge response ${response.safety}: ${response.reason}`);
   }
 
@@ -343,7 +343,7 @@ function App() {
       availableSurfaces: shared.surfaces.map((surface) => surface.id),
     }, signals);
 
-    const simulatorState = { ...shared, context: nextContext, updatedAt: new Date().toISOString() };
+    const simulatorState: StudioSharedState = { ...shared, context: nextContext, updatedAt: new Date().toISOString() };
     const next = applyBrainDecisionToState(simulatorState, result.brainDecision);
     updateShared(next, 'simulator.signals.applied', `${source} produced ${signals.length} signals and applied Brain decision: ${result.brainDecision.summary}`);
     emit('autonomy.cycle.completed', `Autonomy inferred ${result.inferredIntent} with ${result.risk} risk and ${result.suggestions.length} suggestions`);
@@ -353,15 +353,15 @@ function App() {
     const registry = createInitialSurfaceRegistry(shared.surfaces);
     const roof = registry.get('roof');
     registry.update('roof', { energy: Math.min(100, roof.energy + 15), state: 'interactive' });
-    const next = { ...shared, surfaces: registry.list(), updatedAt: new Date().toISOString() };
+    const next: StudioSharedState = { ...shared, surfaces: registry.list(), updatedAt: new Date().toISOString() };
     updateShared(next, 'surface.energy.changed', 'Broadcast Digital Roof energy change');
   }
 
   function emergencyMode(): void {
-    const next = {
+    const next: StudioSharedState = {
       ...shared,
       context: { ...shared.context, mode: 'safety', vehicleState: 'driving', speedKph: 82, weather: 'rain' },
-      driverAttention: 'critical' as DriverAttentionState,
+      driverAttention: 'critical',
       updatedAt: new Date().toISOString(),
     };
     updateShared(next, 'safety.envelope.critical', 'Broadcast critical safety mode to all outputs');
