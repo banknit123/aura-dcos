@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client';
 import { type BrainDecision } from '@aura-dcos/brain';
 import { createAuraDigitalTwin, type AuraCabinContext } from '@aura-dcos/digital-twin';
 import { type CompanionState, type DriverAttentionState } from '@aura-dcos/companion';
+import { type SafeVoiceResponse } from '@aura-dcos/voice-bridge';
 import { createAuraSurfaceRegistry, type AuraSurface, type SurfaceState } from '@aura-dcos/surfaces';
 import { AuraDirector } from './AuraDirector';
 import { BrainPanel } from './BrainPanel';
@@ -11,6 +12,7 @@ import { CompanionPanel } from './CompanionPanel';
 import { OrchestrationPanel } from './OrchestrationPanel';
 import { OutputManagerPanel } from './OutputManagerPanel';
 import { ProfilePanel, type StudioProfileData } from './ProfilePanel';
+import { VoiceBridgePanel } from './VoiceBridgePanel';
 import './styles.css';
 
 interface EventEntry {
@@ -256,6 +258,20 @@ function App() {
     updateShared(next, 'companion.state.updated', `AURA companion switched to ${companion.mode}`);
   }
 
+  function handleSafeVoiceResponse(response: SafeVoiceResponse): void {
+    const nextCompanion: CompanionState = {
+      ...shared.companion,
+      message: response.text,
+      mode: response.outputMode === 'silent' ? 'silent' : response.outputMode === 'textOnly' ? 'assistive' : response.outputMode === 'speech' ? 'voiceOnly' : 'assistive',
+      mood: response.safety === 'blocked' ? 'alert' : response.safety === 'modified' ? 'focused' : shared.companion.mood,
+      allowSpeech: response.outputMode === 'speech' || response.outputMode === 'speechAndText',
+      allowVisualMotion: response.outputMode !== 'speech' && response.safety !== 'modified',
+      animationLevel: response.safety === 'modified' ? 0 : shared.companion.animationLevel,
+    };
+    const next = { ...shared, companion: nextCompanion, updatedAt: new Date().toISOString() };
+    updateShared(next, 'voice.safe-response.applied', `Voice Bridge response ${response.safety}: ${response.reason}`);
+  }
+
   function executeBrainDecision(decision: BrainDecision): void {
     let nextSurfaces = [...shared.surfaces];
     let nextCompanion = { ...shared.companion };
@@ -315,9 +331,9 @@ function App() {
     <main className="app">
       <header className="hero">
         <div>
-          <p className="eyebrow">AURA DCOS · Phase L</p>
+          <p className="eyebrow">AURA DCOS · Phase M</p>
           <h1>AURA Studio</h1>
-          <p>AURA Brain reasoning layer with safe intent and output planning.</p>
+          <p>Voice and LLM adapter interfaces behind the AURA Brain safety gate.</p>
         </div>
         <div className={`risk risk-${risk}`}>Risk: {risk}</div>
       </header>
@@ -347,6 +363,7 @@ function App() {
             onAttentionChange={updateDriverAttention}
             onCompanionState={updateCompanion}
           />
+          <VoiceBridgePanel context={shared.context} risk={risk} driverAttention={shared.driverAttention} onSafeResponse={handleSafeVoiceResponse} />
           <BrainPanel context={shared.context} surfaces={shared.surfaces} risk={risk} driverAttention={shared.driverAttention} onExecuteDecision={executeBrainDecision} />
           <OrchestrationPanel />
         </section>
