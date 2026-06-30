@@ -1,11 +1,13 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { createRoot } from 'react-dom/client';
+import { type AutonomyCycleResult } from '@aura-dcos/autonomy';
 import { type BrainDecision } from '@aura-dcos/brain';
 import { createAuraDigitalTwin, type AuraCabinContext } from '@aura-dcos/digital-twin';
 import { type CompanionState, type DriverAttentionState } from '@aura-dcos/companion';
 import { type SafeVoiceResponse } from '@aura-dcos/voice-bridge';
 import { createAuraSurfaceRegistry, type AuraSurface, type SurfaceState } from '@aura-dcos/surfaces';
 import { AuraDirector } from './AuraDirector';
+import { AutonomyPanel } from './AutonomyPanel';
 import { BrainPanel } from './BrainPanel';
 import { CalibrationOutput } from './CalibrationOutput';
 import { CompanionPanel } from './CompanionPanel';
@@ -304,6 +306,11 @@ function App() {
     updateShared(next, 'brain.decision.executed', `Applied Brain decision: ${decision.summary}`);
   }
 
+  function handleAutonomyDecision(result: AutonomyCycleResult): void {
+    executeBrainDecision(result.brainDecision);
+    emit('autonomy.cycle.completed', `Phase N autonomy inferred ${result.inferredIntent} with ${result.risk} risk and ${result.suggestions.length} suggestions`);
+  }
+
   function increaseRoofEnergy(): void {
     const registry = createInitialSurfaceRegistry(shared.surfaces);
     const roof = registry.get('roof');
@@ -331,9 +338,9 @@ function App() {
     <main className="app">
       <header className="hero">
         <div>
-          <p className="eyebrow">AURA DCOS · Phase M</p>
+          <p className="eyebrow">AURA DCOS · Phase N</p>
           <h1>AURA Studio</h1>
-          <p>Voice and LLM adapter interfaces behind the AURA Brain safety gate.</p>
+          <p>Autonomous cabin intelligence with memory, prediction signals and AURA Brain safety orchestration.</p>
         </div>
         <div className={`risk risk-${risk}`}>Risk: {risk}</div>
       </header>
@@ -364,6 +371,7 @@ function App() {
             onCompanionState={updateCompanion}
           />
           <VoiceBridgePanel context={shared.context} risk={risk} driverAttention={shared.driverAttention} onSafeResponse={handleSafeVoiceResponse} />
+          <AutonomyPanel context={shared.context} surfaces={shared.surfaces} driverAttention={shared.driverAttention} onAutonomyDecision={handleAutonomyDecision} />
           <BrainPanel context={shared.context} surfaces={shared.surfaces} risk={risk} driverAttention={shared.driverAttention} onExecuteDecision={executeBrainDecision} />
           <OrchestrationPanel />
         </section>
