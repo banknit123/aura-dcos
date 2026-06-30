@@ -36,7 +36,11 @@ aura-dcos/
 
 **Phase D: Orchestration Foundation** adds synchronisation, scene, routing and animation packages.
 
-Included packages:
+**Phase E: Studio Orchestration** connects Studio to orchestration packages.
+
+**Phase F: Output Planning** adds hardware-aware output profiles and launch planning.
+
+## Included packages
 
 - `@aura-dcos/kernel`
 - `@aura-dcos/events`
@@ -51,8 +55,9 @@ Included packages:
 - `@aura-dcos/scenes`
 - `@aura-dcos/display-router`
 - `@aura-dcos/animation-engine`
+- `@aura-dcos/output-manager`
 
-Included apps:
+## Included apps
 
 - `@aura-dcos/studio`
 
@@ -87,10 +92,19 @@ npm test
 npm run build
 ```
 
+## Cleanup status
+
+Completed cleanup:
+
+- Removed unused `scene-engine` package files.
+- Confirmed `@aura-dcos/scenes` is the active scene package.
+- Added tests for scenes, cabin sync, display router, animation engine and output manager.
+- Updated package list to reflect the current architecture.
+
 ## Project Principle
 
 Every digital surface must either improve safety, reduce cognitive load, increase comfort, provide useful information, create a memorable experience, or disappear.
 
 ## Next Phase
 
-Phase E should integrate the orchestration packages into Studio so the controller can drive synchronised cabin scenes across all output windows.
+Phase G should add real hardware run support: kiosk/fullscreen launch scripts, projector setup guidance and calibration screens.
