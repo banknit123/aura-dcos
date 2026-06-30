@@ -8,9 +8,10 @@ import {
   type SpeechSynthesisRequest,
   type SpeechSynthesisResult,
   type TextToSpeechAdapter,
+  type VoiceBridgeProviderKind,
 } from '@aura-dcos/voice-bridge';
 
-export type AuraProviderKind = 'mock' | 'local' | 'cloud' | 'vehicle';
+export type AuraProviderKind = 'mock' | 'local' | 'cloud' | 'edge' | 'browser' | 'vehicle';
 export type AuraProviderHealth = 'ready' | 'degraded' | 'unavailable';
 export type VehicleSignalKind = 'speed' | 'gear' | 'weather' | 'fatigue' | 'seatbelt' | 'door' | 'battery';
 
@@ -50,6 +51,10 @@ export interface ProviderRegistryOptions {
 function clampConfidence(value: number): number {
   if (Number.isNaN(value)) return 0;
   return Math.max(0, Math.min(100, Math.round(value)));
+}
+
+function providerKind(kind: VoiceBridgeProviderKind): AuraProviderKind {
+  return kind;
 }
 
 export class LocalEchoLanguageModelAdapter implements LanguageModelAdapter {
@@ -109,8 +114,8 @@ export class AuraProviderRegistry {
 
   status(): AuraProviderRegistryStatus {
     const providers: AuraProviderStatus[] = [
-      { id: 'language-model', kind: this.languageModel.kind, health: 'ready', message: `${this.languageModel.kind} language-model adapter registered.` },
-      { id: 'text-to-speech', kind: this.textToSpeech.kind, health: 'ready', message: `${this.textToSpeech.kind} text-to-speech adapter registered.` },
+      { id: 'language-model', kind: providerKind(this.languageModel.kind), health: 'ready', message: `${this.languageModel.kind} language-model adapter registered.` },
+      { id: 'text-to-speech', kind: providerKind(this.textToSpeech.kind), health: 'ready', message: `${this.textToSpeech.kind} text-to-speech adapter registered.` },
       this.vehicle.status(),
     ];
 
