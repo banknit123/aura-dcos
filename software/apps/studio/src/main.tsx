@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { createAuraDigitalTwin, type AuraCabinContext } from '@aura-dcos/digital-twin';
 import { createAuraSurfaceRegistry, type AuraSurface } from '@aura-dcos/surfaces';
+import { CalibrationOutput } from './CalibrationOutput';
 import { OrchestrationPanel } from './OrchestrationPanel';
 import { OutputManagerPanel } from './OutputManagerPanel';
 import './styles.css';
@@ -13,7 +14,7 @@ interface EventEntry {
   message: string;
 }
 
-type OutputRoute = 'controller' | 'dashboard' | 'roof' | 'projection' | 'floor';
+type OutputRoute = 'controller' | 'dashboard' | 'roof' | 'projection' | 'floor' | 'calibration';
 
 interface StudioSharedState {
   context: AuraCabinContext;
@@ -47,7 +48,7 @@ function now(): string {
 
 function currentRoute(): OutputRoute {
   const route = new URLSearchParams(window.location.search).get('output');
-  if (route === 'dashboard' || route === 'roof' || route === 'projection' || route === 'floor') return route;
+  if (route === 'dashboard' || route === 'roof' || route === 'projection' || route === 'floor' || route === 'calibration') return route;
   return 'controller';
 }
 
@@ -179,6 +180,7 @@ function App() {
   if (route === 'roof') return <RoofOutput context={shared.context} risk={risk} />;
   if (route === 'projection') return <ProjectionOutput risk={risk} />;
   if (route === 'floor') return <FloorOutput risk={risk} />;
+  if (route === 'calibration') return <CalibrationOutput />;
 
   function emit(type: string, message: string): void {
     setEvents((previous) => [{ timestamp: now(), type, source: 'studio', message }, ...previous].slice(0, 12));
@@ -217,9 +219,9 @@ function App() {
     <main className="app">
       <header className="hero">
         <div>
-          <p className="eyebrow">AURA DCOS · Phase F</p>
+          <p className="eyebrow">AURA DCOS · Phase G</p>
           <h1>AURA Studio</h1>
-          <p>Hardware-aware controller for live dashboard, roof, projection and floor outputs.</p>
+          <p>Hardware-ready controller with live outputs and calibration mode.</p>
         </div>
         <div className={`risk risk-${risk}`}>Risk: {risk}</div>
       </header>
@@ -240,6 +242,7 @@ function App() {
             <button onClick={() => runScenario('commute', 'driving', 48, 'clear')}>Commute</button>
             <button onClick={() => runScenario('business', 'driving', 65, 'rain')}>Business + Rain</button>
             <button onClick={emergencyMode}>Emergency Safety</button>
+            <button onClick={() => openOutput('calibration')}>Open Calibration Grid</button>
           </div>
           <OrchestrationPanel />
         </section>
