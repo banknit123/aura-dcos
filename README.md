@@ -50,6 +50,8 @@ aura-dcos/
 
 **Phase K: Build Hardening** adds validation scripts, health checks, CI hardening and release documentation.
 
+**Phase L: AURA Brain** adds safe intent reasoning and output planning.
+
 ## Included packages
 
 - `@aura-dcos/kernel`
@@ -69,6 +71,7 @@ aura-dcos/
 - `@aura-dcos/calibration`
 - `@aura-dcos/profile-store`
 - `@aura-dcos/companion`
+- `@aura-dcos/brain`
 
 ## Included apps
 
@@ -129,6 +132,10 @@ AURA Director provides a cabin-map control panel inside Studio. It can select su
 
 The companion engine evaluates driver workload and safety state to choose visual, assistive, voice-only or emergency behaviour. Studio can send the selected companion state to the AURA projection output.
 
+## AURA Brain
+
+AURA Brain evaluates intent, driver workload, vehicle state, risk and available surfaces. It recommends safe output actions and blocks distracting or unsafe actions such as driver-visible entertainment while driving.
+
 ## Layout Profiles
 
 Studio can save and restore cabin layout profiles in browser storage. A saved profile currently includes the cabin context and surface configuration.
@@ -160,4 +167,4 @@ Every digital surface must either improve safety, reduce cognitive load, increas
 
 ## Next Phase
 
-Phase L should add AURA Brain: an AI reasoning layer for intent, context and safe response planning.
+Phase M should add voice and LLM adapter interfaces while keeping AURA Brain as the safety gate before responses reach cabin outputs.
