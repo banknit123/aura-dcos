@@ -42,6 +42,8 @@ aura-dcos/
 
 **Phase G: Hardware Run Support** adds calibration mode, projector setup guidance and run scripts.
 
+**Phase H: AURA Director** adds cabin-map controls for selecting surfaces and adjusting state/energy.
+
 ## Included packages
 
 - `@aura-dcos/kernel`
@@ -108,6 +110,10 @@ npm test
 npm run build
 ```
 
+## AURA Director
+
+AURA Director provides a cabin-map control panel inside Studio. It can select surfaces such as windshield, dashboard, roof, projection and floor, then update energy and state. Updates are broadcast through the existing Studio shared-state channel so output windows can react.
+
 ## Cleanup status
 
 Completed cleanup:
@@ -127,4 +133,4 @@ Every digital surface must either improve safety, reduce cognitive load, increas
 
 ## Next Phase
 
-Phase H should add AURA Director: a cabin-map UI for controlling surfaces, outputs, brightness and content states from one screen.
+Phase I should add layout persistence and calibration profiles so surface/output configurations can be saved and reused.
