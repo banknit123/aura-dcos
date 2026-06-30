@@ -15,6 +15,7 @@ import { OrchestrationPanel } from './OrchestrationPanel';
 import { OutputManagerPanel } from './OutputManagerPanel';
 import { ProfilePanel, type StudioProfileData } from './ProfilePanel';
 import { SimulatorPanel } from './SimulatorPanel';
+import { VehicleIntegrationPanel } from './VehicleIntegrationPanel';
 import { VoiceBridgePanel } from './VoiceBridgePanel';
 import './styles.css';
 
@@ -434,6 +435,7 @@ function App() {
             ))}
           </div>
           <button onClick={increaseRoofEnergy}>Increase Roof Energy</button>
+          <VehicleIntegrationPanel requestedSurfaces={shared.surfaces.map((surface) => surface.id)} onEvent={emit} />
         </section>
 
         <section className="panel">
