@@ -1,7 +1,8 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { createAuraDigitalTwin, type AuraCabinContext } from '@aura-dcos/digital-twin';
-import { createAuraSurfaceRegistry, type AuraSurface } from '@aura-dcos/surfaces';
+import { createAuraSurfaceRegistry, type AuraSurface, type SurfaceState } from '@aura-dcos/surfaces';
+import { AuraDirector } from './AuraDirector';
 import { CalibrationOutput } from './CalibrationOutput';
 import { OrchestrationPanel } from './OrchestrationPanel';
 import { OutputManagerPanel } from './OutputManagerPanel';
@@ -155,6 +156,7 @@ function App() {
   const route = currentRoute();
   const [channel] = useState(() => (typeof BroadcastChannel === 'undefined' ? undefined : new BroadcastChannel(CHANNEL_NAME)));
   const [shared, setShared] = useState<StudioSharedState>(() => readSharedState());
+  const [selectedSurfaceId, setSelectedSurfaceId] = useState('dashboard');
   const [events, setEvents] = useState<EventEntry[]>([
     { timestamp: now(), type: 'kernel.running', source: 'studio', message: 'AURA DCOS Studio booted' },
   ]);
@@ -197,6 +199,13 @@ function App() {
     updateShared(next, 'scenario.selected', `Broadcast ${mode} scenario to all outputs`);
   }
 
+  function updateSurface(surfaceId: string, update: { state?: SurfaceState; energy?: number }): void {
+    const registry = createInitialSurfaceRegistry(shared.surfaces);
+    registry.update(surfaceId, update);
+    const next = { ...shared, surfaces: registry.list(), updatedAt: new Date().toISOString() };
+    updateShared(next, 'director.surface.updated', `Updated ${surfaceId} from AURA Director`);
+  }
+
   function increaseRoofEnergy(): void {
     const registry = createInitialSurfaceRegistry(shared.surfaces);
     const roof = registry.get('roof');
@@ -219,9 +228,9 @@ function App() {
     <main className="app">
       <header className="hero">
         <div>
-          <p className="eyebrow">AURA DCOS · Phase G</p>
+          <p className="eyebrow">AURA DCOS · Phase H</p>
           <h1>AURA Studio</h1>
-          <p>Hardware-ready controller with live outputs and calibration mode.</p>
+          <p>AURA Director cabin-map control with hardware-ready outputs and calibration mode.</p>
         </div>
         <div className={`risk risk-${risk}`}>Risk: {risk}</div>
       </header>
@@ -248,6 +257,12 @@ function App() {
         </section>
 
         <section className="panel cabin">
+          <AuraDirector
+            surfaces={shared.surfaces}
+            selectedSurfaceId={selectedSurfaceId}
+            onSelectSurface={setSelectedSurfaceId}
+            onUpdateSurface={updateSurface}
+          />
           <h2>Cabin Surfaces</h2>
           <div className="cabin-map">
             {adjustedSurfaces.map((surface) => (
