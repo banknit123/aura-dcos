@@ -54,6 +54,8 @@ aura-dcos/
 
 **Phase M: Voice and LLM Integration** adds adapter-ready language-model contracts, browser push-to-talk speech recognition, browser text-to-speech output, safety-gated LLM responses and Studio integration with AURA Companion / Projection.
 
+**Phase N: Autonomous Cabin Intelligence** adds an autonomy engine with cabin memory, signal fusion, risk inference, proactive suggestions and AURA Brain gated execution.
+
 ## Included packages
 
 - `@aura-dcos/kernel`
@@ -76,6 +78,7 @@ aura-dcos/
 - `@aura-dcos/brain`
 - `@aura-dcos/voice-bridge`
 - `@aura-dcos/ai-adapter`
+- `@aura-dcos/autonomy`
 
 ## Included apps
 
@@ -154,6 +157,19 @@ Phase M provides the first complete voice and LLM integration path for the proto
 
 For best browser voice support, run Studio in Chrome or Edge on localhost and allow microphone permission when prompted.
 
+## Autonomous Cabin Intelligence
+
+Phase N introduces the first autonomous AI cabin loop:
+
+- `@aura-dcos/autonomy` accepts cabin snapshots and multimodal-style signals.
+- The autonomy engine keeps session memory and profile preference memory.
+- It infers cabin risk and likely intent from vehicle, environment, occupant and system signals.
+- It creates proactive suggestions such as family welcome, rain comfort mode, fatigue break and safety focus mode.
+- Every autonomy cycle routes through AURA Brain before surfaces or Companion are changed.
+- Studio includes an Autonomous Cabin Intelligence panel that can simulate fatigue and comfort preference signals, run the cycle, display memory and apply the resulting Brain decision.
+
+This is the foundation for future continuous sensing, local/edge AI, calendar context, occupant recognition and vehicle API integration.
+
 ## Layout Profiles
 
 Studio can save and restore cabin layout profiles in browser storage. A saved profile currently includes the cabin context and surface configuration.
@@ -185,4 +201,4 @@ Every digital surface must either improve safety, reduce cognitive load, increas
 
 ## Next Phase
 
-Phase N should add real provider adapters for cloud and edge LLM services while keeping AURA Brain and Voice Bridge as safety gates before responses reach cabin outputs.
+Phase O should add real cloud, edge and local provider adapters for LLM, speech, vehicle and sensor systems while keeping Voice Bridge, Autonomy and AURA Brain as safety gates before responses reach cabin outputs.
