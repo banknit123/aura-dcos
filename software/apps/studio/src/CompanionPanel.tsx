@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import { createAuraCompanionEngine, type CompanionState, type DriverAttentionState } from '@aura-dcos/companion';
+import './companion.css';
 
 interface CompanionPanelProps {
   driverAttention: DriverAttentionState;
