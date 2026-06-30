@@ -40,6 +40,8 @@ The project combines engineering documentation, modular software packages, digit
 
 **Phase Q: Production Vehicle Platform Foundation** adds platform gateway contracts, simulator-backed platform I/O, security policy checks, telemetry buffering and OTA update status primitives.
 
+**Milestone 1: Demo Ready** is the stabilization track for clean local execution and demonstration. See `docs/software/milestone-1-demo-ready.md`.
+
 ## Repository Structure
 
 ```text
@@ -87,21 +89,17 @@ aura-dcos/
 
 - `@aura-dcos/studio`
 
-## Commands
-
-Install dependencies:
+## Quick start
 
 ```bash
+git clone https://github.com/banknit123/aura-dcos.git
+cd aura-dcos
 npm install
-```
-
-Run AURA Studio:
-
-```bash
+npm run release:check
 npm run dev --workspace @aura-dcos/studio
 ```
 
-Quality and release checks:
+## Quality and release checks
 
 ```bash
 npm run validate
@@ -110,6 +108,14 @@ npm run typecheck
 npm test
 npm run build
 npm run release:check
+```
+
+## Demo runbook
+
+Use `docs/software/milestone-1-demo-ready.md` to validate the complete local demo flow:
+
+```text
+Simulator → Integrations → Autonomy → AURA Brain → Companion / Surfaces
 ```
 
 ## Voice and LLM Integration
@@ -153,12 +159,6 @@ Phase P adds `@aura-dcos/simulator`, a local simulator for replaying vehicle and
 
 Studio includes a Vehicle + Sensor Simulator panel with scenario replay, timed stream playback, replay speed control, stop control, fatigue fault injection and last-signal inspection.
 
-Simulator output is routed through:
-
-```text
-Simulator → Integrations → Autonomy → AURA Brain → Companion / Surfaces
-```
-
 ## Production Vehicle Platform Foundation
 
 Phase Q adds `@aura-dcos/vehicle-platform`, a prototype-safe boundary for future production integrations:
@@ -179,7 +179,3 @@ See `docs/software/phase-g-hardware-run-guide.md` for laptop, monitor, projector
 ## Project Principle
 
 Every digital surface must either improve safety, reduce cognitive load, increase comfort, provide useful information, create a memorable experience, or disappear.
-
-## Next Phase
-
-Phase R should add dedicated Platform Studio UI, provider profile management, scenario import/export and real adapter stubs for CAN/ROS 2/Android Automotive development environments.
