@@ -44,6 +44,8 @@ aura-dcos/
 
 **Phase H: AURA Director** adds cabin-map controls for selecting surfaces and adjusting state/energy.
 
+**Phase I: Layout Profiles** adds browser-based save/load support for cabin surface layouts.
+
 ## Included packages
 
 - `@aura-dcos/kernel`
@@ -61,6 +63,7 @@ aura-dcos/
 - `@aura-dcos/animation-engine`
 - `@aura-dcos/output-manager`
 - `@aura-dcos/calibration`
+- `@aura-dcos/profile-store`
 
 ## Included apps
 
@@ -114,6 +117,10 @@ npm run build
 
 AURA Director provides a cabin-map control panel inside Studio. It can select surfaces such as windshield, dashboard, roof, projection and floor, then update energy and state. Updates are broadcast through the existing Studio shared-state channel so output windows can react.
 
+## Layout Profiles
+
+Studio can save and restore cabin layout profiles in browser storage. A saved profile currently includes the cabin context and surface configuration.
+
 ## Cleanup status
 
 Completed cleanup:
@@ -133,4 +140,4 @@ Every digital surface must either improve safety, reduce cognitive load, increas
 
 ## Next Phase
 
-Phase I should add layout persistence and calibration profiles so surface/output configurations can be saved and reused.
+Phase J should add the AURA companion state model and driver-safe interaction modes.
