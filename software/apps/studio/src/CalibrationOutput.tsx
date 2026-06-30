@@ -1,4 +1,5 @@
 import { defaultProjectorCalibrationGrid } from '@aura-dcos/calibration';
+import './calibration.css';
 
 export function CalibrationOutput() {
   const grid = defaultProjectorCalibrationGrid();
