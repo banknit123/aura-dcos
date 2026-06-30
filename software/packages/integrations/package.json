@@ -1,0 +1,16 @@
+{
+  "name": "@aura-dcos/integrations",
+  "version": "0.1.0",
+  "type": "module",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "vitest run --passWithNoTests",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@aura-dcos/autonomy": "0.1.0",
+    "@aura-dcos/voice-bridge": "0.1.0"
+  }
+}
