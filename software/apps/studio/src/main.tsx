@@ -6,6 +6,7 @@ import { AuraDirector } from './AuraDirector';
 import { CalibrationOutput } from './CalibrationOutput';
 import { OrchestrationPanel } from './OrchestrationPanel';
 import { OutputManagerPanel } from './OutputManagerPanel';
+import { ProfilePanel, type StudioProfileData } from './ProfilePanel';
 import './styles.css';
 
 interface EventEntry {
@@ -206,6 +207,11 @@ function App() {
     updateShared(next, 'director.surface.updated', `Updated ${surfaceId} from AURA Director`);
   }
 
+  function loadProfile(data: StudioProfileData): void {
+    const next = { context: data.context, surfaces: data.surfaces, updatedAt: new Date().toISOString() };
+    updateShared(next, 'profile.loaded', 'Loaded saved AURA layout profile');
+  }
+
   function increaseRoofEnergy(): void {
     const registry = createInitialSurfaceRegistry(shared.surfaces);
     const roof = registry.get('roof');
@@ -228,9 +234,9 @@ function App() {
     <main className="app">
       <header className="hero">
         <div>
-          <p className="eyebrow">AURA DCOS · Phase H</p>
+          <p className="eyebrow">AURA DCOS · Phase I</p>
           <h1>AURA Studio</h1>
-          <p>AURA Director cabin-map control with hardware-ready outputs and calibration mode.</p>
+          <p>AURA Director with saved layout profiles, hardware outputs and calibration mode.</p>
         </div>
         <div className={`risk risk-${risk}`}>Risk: {risk}</div>
       </header>
@@ -279,6 +285,7 @@ function App() {
 
         <section className="panel">
           <OutputManagerPanel baseUrl={`${window.location.origin}${window.location.pathname}`} onOpen={(plan) => openOutput(plan.role as OutputRoute)} />
+          <ProfilePanel data={{ context: shared.context, surfaces: shared.surfaces }} onLoad={loadProfile} />
           <h2>Runtime Event Log</h2>
           <div className="events">
             {events.map((event, index) => (
