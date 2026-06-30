@@ -18,6 +18,11 @@
   color: #9fb4c8;
 }
 
+.brain-intents .selected {
+  border-color: rgba(94, 231, 255, 0.9);
+  background: rgba(94, 231, 255, 0.18);
+}
+
 .brain-normal {
   border-color: rgba(105, 255, 177, 0.55);
 }
