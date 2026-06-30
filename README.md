@@ -40,6 +40,8 @@ The project combines engineering documentation, modular software packages, digit
 
 **Phase Q: Production Vehicle Platform Foundation** adds platform gateway contracts, simulator-backed platform I/O, security policy checks, telemetry buffering and OTA update status primitives.
 
+**Phase R: Vehicle Integration Framework** adds hardware discovery, cabin profiles, display mapping, integration gateway, diagnostics and simulator-backed vehicle integration adapters.
+
 **Milestone 1: Demo Ready** is the stabilization track for clean local execution and demonstration. See `docs/software/milestone-1-demo-ready.md`.
 
 ## Repository Structure
@@ -84,6 +86,7 @@ aura-dcos/
 - `@aura-dcos/integrations`
 - `@aura-dcos/simulator`
 - `@aura-dcos/vehicle-platform`
+- `@aura-dcos/vehicle-integration`
 
 ## Included apps
 
@@ -171,6 +174,22 @@ Phase Q adds `@aura-dcos/vehicle-platform`, a prototype-safe boundary for future
 - A simulator-backed platform gateway for development before real hardware is connected.
 
 This is not a substitute for full automotive safety certification. It is the software seam where production-grade security, diagnostics, OTA, ECU communication and hardware adapters can be attached.
+
+## Vehicle Integration Framework
+
+Phase R adds `@aura-dcos/vehicle-integration`, the plug-in style integration layer for hardware-adaptive deployments:
+
+- Vehicle adapter manifests.
+- Hardware discovery.
+- Generated cabin profiles.
+- Display route mapping.
+- Integration gateway command execution.
+- Integration diagnostics.
+- Simulator-backed adapter for demo mode.
+
+Phase R makes AURA hardware-adaptive and integration-ready. It does not claim zero-work installation into every production vehicle. Real production deployment still requires OEM adapters, vehicle safety gateways, cybersecurity controls and regional HMI compliance processes.
+
+See `docs/software/phase-r-vehicle-integration-framework.md`.
 
 ## Hardware guide
 
