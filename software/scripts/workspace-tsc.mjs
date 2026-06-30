@@ -20,8 +20,12 @@ function workspaceDirs() {
   return dirs;
 }
 
+function executable(name) {
+  return process.platform === 'win32' ? `${name}.cmd` : name;
+}
+
 function run(command, args, cwd) {
-  const result = spawnSync(command, args, { cwd, stdio: 'inherit', shell: process.platform === 'win32' });
+  const result = spawnSync(executable(command), args, { cwd, stdio: 'inherit', shell: false });
   return result.status ?? 1;
 }
 
