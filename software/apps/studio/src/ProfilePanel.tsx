@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { createAuraProfileStore, type AuraProfile } from '@aura-dcos/profile-store';
 import type { AuraCabinContext } from '@aura-dcos/digital-twin';
 import type { AuraSurface } from '@aura-dcos/surfaces';
+import './profile.css';
 
 export interface StudioProfileData {
   context: AuraCabinContext;
