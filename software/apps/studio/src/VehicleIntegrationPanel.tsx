@@ -7,6 +7,7 @@ import {
   type IntegrationDiagnostics,
   type VehicleCabinProfile,
 } from '@aura-dcos/vehicle-integration';
+import './VehicleIntegrationPanel.css';
 
 interface VehicleIntegrationPanelProps {
   requestedSurfaces: string[];
