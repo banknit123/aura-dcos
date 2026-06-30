@@ -38,6 +38,8 @@ The project combines engineering documentation, modular software packages, digit
 
 **Phase P: Vehicle and Sensor Simulator** adds replayable local vehicle/sensor stream scenarios, instant replay, continuous frame playback, replay speed control, fault injection and end-to-end Studio routing through Integrations, Autonomy and AURA Brain.
 
+**Phase Q: Production Vehicle Platform Foundation** adds platform gateway contracts, simulator-backed platform I/O, security policy checks, telemetry buffering and OTA update status primitives.
+
 ## Repository Structure
 
 ```text
@@ -79,6 +81,7 @@ aura-dcos/
 - `@aura-dcos/autonomy`
 - `@aura-dcos/integrations`
 - `@aura-dcos/simulator`
+- `@aura-dcos/vehicle-platform`
 
 ## Included apps
 
@@ -148,15 +151,7 @@ Phase P adds `@aura-dcos/simulator`, a local simulator for replaying vehicle and
 - `fatigueDrive` simulates high-speed driving plus driver fatigue.
 - `safetyAlert` simulates a safety-related driving stream.
 
-Studio includes a Vehicle + Sensor Simulator panel with:
-
-- Scenario selector
-- Instant replay
-- Timed stream playback
-- 1x / 2x / 5x replay speed
-- Stop control
-- Fatigue fault injection
-- Last-signal inspection
+Studio includes a Vehicle + Sensor Simulator panel with scenario replay, timed stream playback, replay speed control, stop control, fatigue fault injection and last-signal inspection.
 
 Simulator output is routed through:
 
@@ -164,7 +159,18 @@ Simulator output is routed through:
 Simulator → Integrations → Autonomy → AURA Brain → Companion / Surfaces
 ```
 
-This gives the prototype an end-to-end local demonstration path before real CAN, Android Automotive, cloud, edge or sensor-provider integrations are added.
+## Production Vehicle Platform Foundation
+
+Phase Q adds `@aura-dcos/vehicle-platform`, a prototype-safe boundary for future production integrations:
+
+- Platform gateway contracts for CAN, Automotive Ethernet, ROS 2, Android Automotive and simulator backends.
+- Platform commands for display, companion, HVAC, lighting, seats and system actions.
+- A safety policy engine that blocks unsafe commands and audits safety-critical commands.
+- A telemetry buffer for platform events and diagnostics.
+- An OTA status manager for update availability and prototype update state.
+- A simulator-backed platform gateway for development before real hardware is connected.
+
+This is not a substitute for full automotive safety certification. It is the software seam where production-grade security, diagnostics, OTA, ECU communication and hardware adapters can be attached.
 
 ## Hardware guide
 
@@ -176,4 +182,4 @@ Every digital surface must either improve safety, reduce cognitive load, increas
 
 ## Next Phase
 
-Phase Q should add richer provider profiles, scenario authoring/import-export, advanced fault injection presets and optional local/edge LLM provider implementations.
+Phase R should add dedicated Platform Studio UI, provider profile management, scenario import/export and real adapter stubs for CAN/ROS 2/Android Automotive development environments.
