@@ -1,9 +1,11 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { createAuraDigitalTwin, type AuraCabinContext } from '@aura-dcos/digital-twin';
+import { type CompanionState, type DriverAttentionState } from '@aura-dcos/companion';
 import { createAuraSurfaceRegistry, type AuraSurface, type SurfaceState } from '@aura-dcos/surfaces';
 import { AuraDirector } from './AuraDirector';
 import { CalibrationOutput } from './CalibrationOutput';
+import { CompanionPanel } from './CompanionPanel';
 import { OrchestrationPanel } from './OrchestrationPanel';
 import { OutputManagerPanel } from './OutputManagerPanel';
 import { ProfilePanel, type StudioProfileData } from './ProfilePanel';
@@ -21,6 +23,8 @@ type OutputRoute = 'controller' | 'dashboard' | 'roof' | 'projection' | 'floor' 
 interface StudioSharedState {
   context: AuraCabinContext;
   surfaces: AuraSurface[];
+  companion: CompanionState;
+  driverAttention: DriverAttentionState;
   updatedAt: string;
 }
 
@@ -34,6 +38,16 @@ const initialContext: AuraCabinContext = {
   weather: 'clear',
   occupants: 3,
   childPresent: true,
+};
+
+const initialCompanion: CompanionState = {
+  name: 'AURA',
+  mood: 'friendly',
+  mode: 'visual',
+  message: 'Family mode active.',
+  animationLevel: 70,
+  allowVisualMotion: true,
+  allowSpeech: true,
 };
 
 const initialSurfaces: AuraSurface[] = [
@@ -55,13 +69,30 @@ function currentRoute(): OutputRoute {
 }
 
 function defaultState(): StudioSharedState {
-  return { context: initialContext, surfaces: initialSurfaces, updatedAt: new Date().toISOString() };
+  return {
+    context: initialContext,
+    surfaces: initialSurfaces,
+    companion: initialCompanion,
+    driverAttention: 'parked',
+    updatedAt: new Date().toISOString(),
+  };
+}
+
+function normaliseState(state: Partial<StudioSharedState>): StudioSharedState {
+  return {
+    ...defaultState(),
+    ...state,
+    context: state.context ?? initialContext,
+    surfaces: state.surfaces ?? initialSurfaces,
+    companion: state.companion ?? initialCompanion,
+    driverAttention: state.driverAttention ?? 'parked',
+  };
 }
 
 function readSharedState(): StudioSharedState {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    return raw ? (JSON.parse(raw) as StudioSharedState) : defaultState();
+    return raw ? normaliseState(JSON.parse(raw) as Partial<StudioSharedState>) : defaultState();
   } catch {
     return defaultState();
   }
@@ -129,12 +160,13 @@ function RoofOutput({ context, risk }: { context: AuraCabinContext; risk: string
   );
 }
 
-function ProjectionOutput({ risk }: { risk: string }) {
+function ProjectionOutput({ companion, risk }: { companion: CompanionState; risk: string }) {
   return (
     <OutputShell title="AURA Presence" subtitle="Live projection / virtual companion output">
-      <section className={`aura-presence risk-${risk}`}>
+      <section className={`aura-presence risk-${risk} companion-${companion.mood}`}>
         <div className="aura-avatar">A</div>
-        <p>{risk === 'critical' ? 'Voice-only mode' : 'Hello, I am AURA.'}</p>
+        <p>{companion.message}</p>
+        <p className="muted">{companion.mode} · {companion.mood} · motion {companion.animationLevel}%</p>
       </section>
     </OutputShell>
   );
@@ -164,7 +196,7 @@ function App() {
 
   useEffect(() => {
     if (!channel) return;
-    channel.onmessage = (message) => setShared(message.data as StudioSharedState);
+    channel.onmessage = (message) => setShared(normaliseState(message.data as Partial<StudioSharedState>));
     return () => channel.close();
   }, [channel]);
 
@@ -181,7 +213,7 @@ function App() {
 
   if (route === 'dashboard') return <DashboardOutput context={shared.context} risk={risk} />;
   if (route === 'roof') return <RoofOutput context={shared.context} risk={risk} />;
-  if (route === 'projection') return <ProjectionOutput risk={risk} />;
+  if (route === 'projection') return <ProjectionOutput companion={shared.companion} risk={risk} />;
   if (route === 'floor') return <FloorOutput risk={risk} />;
   if (route === 'calibration') return <CalibrationOutput />;
 
@@ -208,8 +240,18 @@ function App() {
   }
 
   function loadProfile(data: StudioProfileData): void {
-    const next = { context: data.context, surfaces: data.surfaces, updatedAt: new Date().toISOString() };
+    const next = { ...shared, context: data.context, surfaces: data.surfaces, updatedAt: new Date().toISOString() };
     updateShared(next, 'profile.loaded', 'Loaded saved AURA layout profile');
+  }
+
+  function updateDriverAttention(driverAttention: DriverAttentionState): void {
+    const next = { ...shared, driverAttention, updatedAt: new Date().toISOString() };
+    updateShared(next, 'companion.attention.changed', `Driver attention changed to ${driverAttention}`);
+  }
+
+  function updateCompanion(companion: CompanionState): void {
+    const next = { ...shared, companion, updatedAt: new Date().toISOString() };
+    updateShared(next, 'companion.state.updated', `AURA companion switched to ${companion.mode}`);
   }
 
   function increaseRoofEnergy(): void {
@@ -221,7 +263,12 @@ function App() {
   }
 
   function emergencyMode(): void {
-    const next = { ...shared, context: { ...shared.context, mode: 'safety', vehicleState: 'driving', speedKph: 82, weather: 'rain' }, updatedAt: new Date().toISOString() };
+    const next = {
+      ...shared,
+      context: { ...shared.context, mode: 'safety', vehicleState: 'driving', speedKph: 82, weather: 'rain' },
+      driverAttention: 'critical' as DriverAttentionState,
+      updatedAt: new Date().toISOString(),
+    };
     updateShared(next, 'safety.envelope.critical', 'Broadcast critical safety mode to all outputs');
   }
 
@@ -234,9 +281,9 @@ function App() {
     <main className="app">
       <header className="hero">
         <div>
-          <p className="eyebrow">AURA DCOS · Phase I</p>
+          <p className="eyebrow">AURA DCOS · Phase J</p>
           <h1>AURA Studio</h1>
-          <p>AURA Director with saved layout profiles, hardware outputs and calibration mode.</p>
+          <p>AURA companion state model with driver-safe projection behaviour.</p>
         </div>
         <div className={`risk risk-${risk}`}>Risk: {risk}</div>
       </header>
@@ -259,6 +306,13 @@ function App() {
             <button onClick={emergencyMode}>Emergency Safety</button>
             <button onClick={() => openOutput('calibration')}>Open Calibration Grid</button>
           </div>
+          <CompanionPanel
+            driverAttention={shared.driverAttention}
+            childPresent={shared.context.childPresent}
+            emergencyActive={risk === 'critical'}
+            onAttentionChange={updateDriverAttention}
+            onCompanionState={updateCompanion}
+          />
           <OrchestrationPanel />
         </section>
 
