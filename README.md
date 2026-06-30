@@ -52,7 +52,7 @@ aura-dcos/
 
 **Phase L: AURA Brain** adds safe intent reasoning and output planning.
 
-**Phase M: Voice and LLM Bridge** adds safety-gated voice and language-model adapter interfaces.
+**Phase M: Voice and LLM Integration** adds adapter-ready language-model contracts, browser push-to-talk speech recognition, browser text-to-speech output, safety-gated LLM responses and Studio integration with AURA Companion / Projection.
 
 ## Included packages
 
@@ -140,9 +140,19 @@ The companion engine evaluates driver workload and safety state to choose visual
 
 AURA Brain evaluates intent, driver workload, vehicle state, risk and available surfaces. It recommends safe output actions and blocks distracting or unsafe actions such as driver-visible entertainment while driving.
 
-## Voice and LLM Bridge
+## Voice and LLM Integration
 
-The voice bridge defines the adapter boundary for future microphone, speech-to-text, text-to-speech and LLM integrations. Studio can simulate a prompt, produce a mock language-model response, safety-gate it, and apply the safe response to AURA Companion / Projection.
+Phase M provides the first complete voice and LLM integration path for the prototype:
+
+- `@aura-dcos/voice-bridge` defines speech-to-text, text-to-speech and language-model adapter contracts.
+- The default language-model adapter is a deterministic mock provider so the repo runs without API keys.
+- Studio supports typed prompts and browser push-to-talk voice input where the browser exposes `SpeechRecognition` / `webkitSpeechRecognition`.
+- Safe responses are spoken with browser text-to-speech when available.
+- All LLM responses pass through the AURA safety gate before updating Companion or Projection state.
+- Driving mode blocks distracting entertainment prompts and converts responses to concise voice-first output.
+- Critical mode overrides model output with emergency-oriented spoken guidance.
+
+For best browser voice support, run Studio in Chrome or Edge on localhost and allow microphone permission when prompted.
 
 ## Layout Profiles
 
@@ -175,4 +185,4 @@ Every digital surface must either improve safety, reduce cognitive load, increas
 
 ## Next Phase
 
-Phase N should add real provider adapters for speech-to-text, text-to-speech and LLM services while keeping AURA Brain and Voice Bridge as safety gates before responses reach cabin outputs.
+Phase N should add real provider adapters for cloud and edge LLM services while keeping AURA Brain and Voice Bridge as safety gates before responses reach cabin outputs.
