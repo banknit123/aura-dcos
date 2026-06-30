@@ -40,6 +40,8 @@ aura-dcos/
 
 **Phase F: Output Planning** adds hardware-aware output profiles and launch planning.
 
+**Phase G: Hardware Run Support** adds calibration mode, projector setup guidance and run scripts.
+
 ## Included packages
 
 - `@aura-dcos/kernel`
@@ -56,6 +58,7 @@ aura-dcos/
 - `@aura-dcos/display-router`
 - `@aura-dcos/animation-engine`
 - `@aura-dcos/output-manager`
+- `@aura-dcos/calibration`
 
 ## Included apps
 
@@ -75,6 +78,18 @@ Run AURA Studio:
 npm run dev --workspace @aura-dcos/studio
 ```
 
+Windows helper:
+
+```bat
+software\scripts\run-studio-windows.bat
+```
+
+macOS helper:
+
+```bash
+bash software/scripts/run-studio-mac.sh
+```
+
 Open output windows from the Studio controller, or directly use:
 
 ```text
@@ -82,6 +97,7 @@ Open output windows from the Studio controller, or directly use:
 ?output=roof
 ?output=projection
 ?output=floor
+?output=calibration
 ```
 
 Quality checks:
@@ -101,10 +117,14 @@ Completed cleanup:
 - Added tests for scenes, cabin sync, display router, animation engine and output manager.
 - Updated package list to reflect the current architecture.
 
+## Hardware guide
+
+See `docs/software/phase-g-hardware-run-guide.md` for laptop, monitor, projector and calibration setup.
+
 ## Project Principle
 
 Every digital surface must either improve safety, reduce cognitive load, increase comfort, provide useful information, create a memorable experience, or disappear.
 
 ## Next Phase
 
-Phase G should add real hardware run support: kiosk/fullscreen launch scripts, projector setup guidance and calibration screens.
+Phase H should add AURA Director: a cabin-map UI for controlling surfaces, outputs, brightness and content states from one screen.
