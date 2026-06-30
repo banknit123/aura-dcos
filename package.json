@@ -8,13 +8,10 @@
     "software/packages/*"
   ],
   "scripts": {
-    "build": "npm run build --workspace @aura-dcos/studio",
-    "build:all": "npm run build --workspaces --if-present",
-    "test": "npm run test --workspace @aura-dcos/studio",
-    "test:all": "npm run test --workspaces --if-present",
+    "build": "npm run build --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present",
     "lint": "npm run lint --workspaces --if-present",
-    "typecheck": "npm run typecheck --workspace @aura-dcos/studio",
-    "typecheck:all": "npm run typecheck --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present",
     "validate": "node software/scripts/validate-workspace.mjs",
     "health": "node software/scripts/prototype-health.mjs",
     "release:check": "npm run validate && npm run typecheck && npm test && npm run build"
