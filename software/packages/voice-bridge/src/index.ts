@@ -118,6 +118,12 @@ function safetyMode(context: VoiceBridgeContext): LanguageModelRequest['safetyMo
   return 'normal';
 }
 
+function tokenBudget(context: VoiceBridgeContext): number {
+  if (context.risk === 'critical' || context.driverAttention === 'critical') return 60;
+  if (context.vehicleState === 'driving') return 80;
+  return 180;
+}
+
 function safeResponseFor(input: VoiceInput, context: VoiceBridgeContext, modelResponse: LanguageModelResponse): SafeVoiceResponse {
   const lower = input.transcript.toLowerCase();
 
@@ -165,16 +171,23 @@ export class AuraVoiceBridge {
     this.textToSpeech = options.textToSpeech ?? new NoopTextToSpeechAdapter();
   }
 
-  async runTextTurn(input: VoiceInput, context: VoiceBridgeContext): Promise<VoiceTurnResult> {
-    const request: LanguageModelRequest = {
+  createRequest(input: VoiceInput, context: VoiceBridgeContext): LanguageModelRequest {
+    return {
       prompt: input.transcript,
       systemContext: `vehicle=${context.vehicleState};attention=${context.driverAttention};risk=${context.risk}`,
-      maxTokens: context.vehicleState === 'driving' ? 80 : 180,
+      maxTokens: tokenBudget(context),
       safetyMode: safetyMode(context),
     };
+  }
 
+  gateResponse(modelResponse: LanguageModelResponse, context: VoiceBridgeContext, input?: VoiceInput): SafeVoiceResponse {
+    return safeResponseFor(input ?? { source: 'typed', transcript: '', locale: 'en-AU' }, context, modelResponse);
+  }
+
+  async runTextTurn(input: VoiceInput, context: VoiceBridgeContext): Promise<VoiceTurnResult> {
+    const request = this.createRequest(input, context);
     const modelResponse = await this.languageModel.complete(request);
-    const safeResponse = safeResponseFor(input, context, modelResponse);
+    const safeResponse = this.gateResponse(modelResponse, context, input);
     const speech = await this.textToSpeech.speak({ text: safeResponse.text, locale: input.locale, mode: safeResponse.outputMode });
 
     return { input, request, modelResponse, safeResponse, speech };
