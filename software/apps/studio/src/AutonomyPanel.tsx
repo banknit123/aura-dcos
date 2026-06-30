@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   createAuraAutonomyEngine,
   type AutonomyCabinSnapshot,
@@ -14,6 +14,8 @@ interface AutonomyPanelProps {
   context: AuraCabinContext;
   surfaces: AuraSurface[];
   driverAttention: DriverAttentionState;
+  externalSignals?: AutonomySignal[];
+  externalSignalSource?: string;
   onAutonomyDecision: (result: AutonomyCycleResult) => void;
 }
 
@@ -21,7 +23,7 @@ function timestamp(): string {
   return new Date().toISOString();
 }
 
-export function AutonomyPanel({ context, surfaces, driverAttention, onAutonomyDecision }: AutonomyPanelProps) {
+export function AutonomyPanel({ context, surfaces, driverAttention, externalSignals = [], externalSignalSource, onAutonomyDecision }: AutonomyPanelProps) {
   const engine = useMemo(() => createAuraAutonomyEngine(), []);
   const [result, setResult] = useState<AutonomyCycleResult | null>(null);
   const [fatigueSignal, setFatigueSignal] = useState(false);
@@ -42,6 +44,7 @@ export function AutonomyPanel({ context, surfaces, driverAttention, onAutonomyDe
   function buildSignals(): AutonomySignal[] {
     const signals: AutonomySignal[] = [
       { id: 'system-heartbeat', kind: 'system', value: true, confidence: 100, timestamp: timestamp() },
+      ...externalSignals,
     ];
 
     if (context.vehicleState === 'parked') {
@@ -65,6 +68,11 @@ export function AutonomyPanel({ context, surfaces, driverAttention, onAutonomyDe
     onAutonomyDecision(next);
   }
 
+  useEffect(() => {
+    if (externalSignals.length === 0) return;
+    runCycle();
+  }, [externalSignals]);
+
   function resetMemory(): void {
     engine.resetMemory();
     setResult(null);
@@ -73,7 +81,11 @@ export function AutonomyPanel({ context, surfaces, driverAttention, onAutonomyDe
   return (
     <section className="autonomy-panel">
       <h2>Autonomous Cabin Intelligence</h2>
-      <p className="muted">Phase N runs a context-aware autonomy cycle, stores cabin memory and routes decisions through AURA Brain.</p>
+      <p className="muted">Phase N/P runs context-aware autonomy using manual, vehicle and simulator signals before routing decisions through AURA Brain.</p>
+
+      {externalSignals.length > 0 ? (
+        <small className="autonomy-source">External source: {externalSignalSource ?? 'unknown'} · {externalSignals.length} signals</small>
+      ) : null}
 
       <label className="autonomy-toggle">
         <input type="checkbox" checked={fatigueSignal} onChange={(event) => setFatigueSignal(event.currentTarget.checked)} />
