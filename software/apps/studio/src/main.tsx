@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { createRoot } from 'react-dom/client';
+import { type BrainDecision } from '@aura-dcos/brain';
 import { createAuraDigitalTwin, type AuraCabinContext } from '@aura-dcos/digital-twin';
 import { type CompanionState, type DriverAttentionState } from '@aura-dcos/companion';
 import { createAuraSurfaceRegistry, type AuraSurface, type SurfaceState } from '@aura-dcos/surfaces';
@@ -255,6 +256,38 @@ function App() {
     updateShared(next, 'companion.state.updated', `AURA companion switched to ${companion.mode}`);
   }
 
+  function executeBrainDecision(decision: BrainDecision): void {
+    let nextSurfaces = [...shared.surfaces];
+    let nextCompanion = { ...shared.companion };
+
+    for (const action of decision.actions) {
+      if (action.kind === 'setSurfaceState' && typeof action.value === 'string') {
+        nextSurfaces = nextSurfaces.map((surface) => surface.id === action.target ? { ...surface, state: action.value as SurfaceState } : surface);
+      }
+
+      if (action.kind === 'reduceMotion' && action.target === 'all') {
+        nextSurfaces = nextSurfaces.map((surface) => surface.visibleToDriver ? surface : { ...surface, energy: Math.min(surface.energy, 25) });
+      }
+
+      if (action.kind === 'setCompanionMode' && typeof action.value === 'string') {
+        nextCompanion = {
+          ...nextCompanion,
+          mode: action.value as CompanionState['mode'],
+          mood: action.value === 'emergency' ? 'emergency' : action.value === 'voiceOnly' ? 'focused' : nextCompanion.mood,
+          allowVisualMotion: action.value !== 'emergency' && action.value !== 'voiceOnly',
+          animationLevel: action.value === 'emergency' || action.value === 'voiceOnly' ? 0 : nextCompanion.animationLevel,
+        };
+      }
+
+      if (action.kind === 'speak' || action.kind === 'showMessage') {
+        nextCompanion = { ...nextCompanion, message: String(action.value) };
+      }
+    }
+
+    const next = { ...shared, surfaces: nextSurfaces, companion: nextCompanion, updatedAt: new Date().toISOString() };
+    updateShared(next, 'brain.decision.executed', `Applied Brain decision: ${decision.summary}`);
+  }
+
   function increaseRoofEnergy(): void {
     const registry = createInitialSurfaceRegistry(shared.surfaces);
     const roof = registry.get('roof');
@@ -314,7 +347,7 @@ function App() {
             onAttentionChange={updateDriverAttention}
             onCompanionState={updateCompanion}
           />
-          <BrainPanel context={shared.context} surfaces={shared.surfaces} risk={risk} driverAttention={shared.driverAttention} />
+          <BrainPanel context={shared.context} surfaces={shared.surfaces} risk={risk} driverAttention={shared.driverAttention} onExecuteDecision={executeBrainDecision} />
           <OrchestrationPanel />
         </section>
 
