@@ -1,4 +1,5 @@
 import type { AuraSurface, SurfaceState } from '@aura-dcos/surfaces';
+import './director.css';
 
 interface AuraDirectorProps {
   surfaces: AuraSurface[];
