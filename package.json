@@ -11,7 +11,10 @@
     "build": "npm run build --workspaces --if-present",
     "test": "npm run test --workspaces --if-present",
     "lint": "npm run lint --workspaces --if-present",
-    "typecheck": "npm run typecheck --workspaces --if-present"
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "validate": "node software/scripts/validate-workspace.mjs",
+    "health": "node software/scripts/prototype-health.mjs",
+    "release:check": "npm run validate && npm run typecheck && npm test && npm run build"
   },
   "engines": {
     "node": ">=20.0.0",
