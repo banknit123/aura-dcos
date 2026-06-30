@@ -36,7 +36,7 @@ The project combines engineering documentation, modular software packages, digit
 
 **Phase O: Provider and Vehicle Integration Layer** adds a provider registry, local/mock LLM and TTS adapters, a vehicle signal adapter contract and signal mapping into AURA Autonomy.
 
-**Phase P: Vehicle and Sensor Simulator** adds replayable local vehicle/sensor stream scenarios for parked family, rain commute, fatigue drive and safety alert prototype testing.
+**Phase P: Vehicle and Sensor Simulator** adds replayable local vehicle/sensor stream scenarios, a Studio simulator panel and end-to-end replay through Integrations, Autonomy and AURA Brain.
 
 ## Repository Structure
 
@@ -148,7 +148,13 @@ Phase P adds `@aura-dcos/simulator`, a local simulator for replaying vehicle and
 - `fatigueDrive` simulates high-speed driving plus driver fatigue.
 - `safetyAlert` simulates a safety-related driving stream.
 
-The simulator produces `VehicleSignal` records compatible with `@aura-dcos/integrations`, which can then map them into Autonomy signals for Brain-gated decisions.
+Studio now includes a Vehicle + Sensor Simulator panel. Selecting a scenario and replaying it sends signals through:
+
+```text
+Simulator → Integrations → Autonomy → AURA Brain → Companion / Surfaces
+```
+
+This gives the prototype an end-to-end local demonstration path before real CAN, Android Automotive, cloud, edge or sensor-provider integrations are added.
 
 ## Hardware guide
 
@@ -160,4 +166,4 @@ Every digital surface must either improve safety, reduce cognitive load, increas
 
 ## Next Phase
 
-Phase Q should wire simulator replay into Studio and add richer scenario playback controls for end-to-end demonstrations.
+Phase Q should add richer provider profiles, scenario playback controls, fault injection presets and optional local/edge LLM provider implementations.
