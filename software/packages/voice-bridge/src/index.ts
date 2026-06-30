@@ -1,7 +1,7 @@
 export type VoiceInputSource = 'typed' | 'microphone' | 'wakeWord';
 export type VoiceOutputMode = 'silent' | 'textOnly' | 'speech' | 'speechAndText';
 export type ResponseSafety = 'allowed' | 'modified' | 'blocked';
-export type VoiceBridgeProviderKind = 'mock' | 'browser' | 'cloud' | 'edge';
+export type VoiceBridgeProviderKind = 'mock' | 'browser' | 'cloud' | 'edge' | 'local';
 
 export interface VoiceInput {
   source: VoiceInputSource;
@@ -87,139 +87,97 @@ export interface AuraVoiceBridgeOptions {
   textToSpeech?: TextToSpeechAdapter;
 }
 
-const BLOCKED_PROMPT_PATTERNS = [
-  /play\s+(a\s+)?movie/i,
-  /show\s+(a\s+)?video/i,
-  /open\s+(youtube|netflix|tiktok)/i,
-  /turn\s+off\s+(safety|warnings?)/i,
-];
-
-function clampConfidence(confidence: number): number {
-  if (Number.isNaN(confidence)) return 0;
-  return Math.max(0, Math.min(100, Math.round(confidence)));
-}
-
-function truncateForDriver(text: string, maxLength: number): string {
-  const trimmed = text.trim();
-  if (trimmed.length <= maxLength) return trimmed;
-  return `${trimmed.slice(0, Math.max(0, maxLength - 3)).trimEnd()}...`;
-}
-
-function containsBlockedPrompt(prompt: string): boolean {
-  return BLOCKED_PROMPT_PATTERNS.some((pattern) => pattern.test(prompt));
-}
-
 export class MockLanguageModelAdapter implements LanguageModelAdapter {
-  readonly kind: VoiceBridgeProviderKind = 'mock';
+  readonly kind = 'mock' as const;
 
   async complete(request: LanguageModelRequest): Promise<LanguageModelResponse> {
     return {
-      text: `AURA processed: ${request.prompt}. Safety mode is ${request.safetyMode}.`,
-      confidence: 88,
+      text: request.safetyMode === 'emergency'
+        ? 'Emergency guidance active. Stay focused and follow safety instructions.'
+        : `AURA understood: ${request.prompt}`,
+      confidence: request.safetyMode === 'driverSafe' ? 88 : 92,
     };
   }
 }
 
 export class NoopTextToSpeechAdapter implements TextToSpeechAdapter {
-  readonly kind: VoiceBridgeProviderKind = 'mock';
+  readonly kind = 'mock' as const;
 
   async speak(request: SpeechSynthesisRequest): Promise<SpeechSynthesisResult> {
     return {
-      queued: request.mode === 'speech' || request.mode === 'speechAndText',
+      queued: false,
       spokenText: request.text,
-      reason: request.mode === 'silent' || request.mode === 'textOnly'
-        ? 'Speech skipped because the selected output mode is not spoken.'
-        : 'Speech request accepted by the mock text-to-speech adapter.',
+      reason: 'No text-to-speech adapter configured.',
     };
   }
 }
 
+function safetyMode(context: VoiceBridgeContext): LanguageModelRequest['safetyMode'] {
+  if (context.risk === 'critical' || context.driverAttention === 'critical') return 'emergency';
+  if (context.vehicleState === 'driving') return 'driverSafe';
+  return 'normal';
+}
+
+function safeResponseFor(input: VoiceInput, context: VoiceBridgeContext, modelResponse: LanguageModelResponse): SafeVoiceResponse {
+  const lower = input.transcript.toLowerCase();
+
+  if (context.risk === 'critical' || context.driverAttention === 'critical') {
+    return {
+      safety: 'modified',
+      outputMode: 'speech',
+      text: 'Emergency guidance active. Non-essential conversation is paused.',
+      reason: 'Critical driver workload requires emergency voice-only output.',
+    };
+  }
+
+  if (context.vehicleState === 'driving' && (lower.includes('video') || lower.includes('game') || lower.includes('movie'))) {
+    return {
+      safety: 'blocked',
+      outputMode: 'speech',
+      text: 'I cannot start distracting entertainment while driving.',
+      reason: 'Driver-visible entertainment is blocked while the vehicle is moving.',
+    };
+  }
+
+  if (context.vehicleState === 'driving') {
+    return {
+      safety: 'modified',
+      outputMode: 'speech',
+      text: modelResponse.text.slice(0, 120),
+      reason: 'Driving mode uses concise voice-first output.',
+    };
+  }
+
+  return {
+    safety: 'allowed',
+    outputMode: 'speechAndText',
+    text: modelResponse.text,
+    reason: 'Parked or low-risk state allows normal voice and visual response.',
+  };
+}
+
 export class AuraVoiceBridge {
   private readonly languageModel: LanguageModelAdapter;
-  private readonly textToSpeech?: TextToSpeechAdapter;
+  private readonly textToSpeech: TextToSpeechAdapter;
 
   constructor(options: AuraVoiceBridgeOptions = {}) {
     this.languageModel = options.languageModel ?? new MockLanguageModelAdapter();
-    this.textToSpeech = options.textToSpeech;
-  }
-
-  createRequest(input: VoiceInput, context: VoiceBridgeContext): LanguageModelRequest {
-    const transcript = input.transcript.trim();
-    const safetyMode = context.risk === 'critical' || context.driverAttention === 'critical'
-      ? 'emergency'
-      : context.vehicleState === 'driving' || context.driverAttention === 'highLoad'
-        ? 'driverSafe'
-        : 'normal';
-
-    return {
-      prompt: transcript,
-      systemContext: [
-        'AURA cabin assistant.',
-        `Safety mode: ${safetyMode}.`,
-        `Locale: ${input.locale}.`,
-        'Prioritise safety, reduce cognitive load, and avoid driver-visible distraction.',
-      ].join(' '),
-      maxTokens: safetyMode === 'normal' ? 180 : 60,
-      safetyMode,
-    };
+    this.textToSpeech = options.textToSpeech ?? new NoopTextToSpeechAdapter();
   }
 
   async runTextTurn(input: VoiceInput, context: VoiceBridgeContext): Promise<VoiceTurnResult> {
-    const request = this.createRequest(input, context);
+    const request: LanguageModelRequest = {
+      prompt: input.transcript,
+      systemContext: `vehicle=${context.vehicleState};attention=${context.driverAttention};risk=${context.risk}`,
+      maxTokens: context.vehicleState === 'driving' ? 80 : 180,
+      safetyMode: safetyMode(context),
+    };
+
     const modelResponse = await this.languageModel.complete(request);
-    const safeResponse = this.gateResponse(modelResponse, context, request.prompt);
-    const speech = this.textToSpeech
-      ? await this.textToSpeech.speak({ text: safeResponse.text, locale: input.locale, mode: safeResponse.outputMode })
-      : undefined;
+    const safeResponse = safeResponseFor(input, context, modelResponse);
+    const speech = await this.textToSpeech.speak({ text: safeResponse.text, locale: input.locale, mode: safeResponse.outputMode });
 
     return { input, request, modelResponse, safeResponse, speech };
-  }
-
-  gateResponse(response: LanguageModelResponse, context: VoiceBridgeContext, originalPrompt = ''): SafeVoiceResponse {
-    const safeConfidence = clampConfidence(response.confidence);
-
-    if (containsBlockedPrompt(originalPrompt) && context.vehicleState === 'driving') {
-      return {
-        safety: 'blocked',
-        outputMode: 'speech',
-        text: 'I cannot show distracting content while driving. I can help with navigation, comfort or safety instead.',
-        reason: 'Driver-visible entertainment and safety override requests are blocked while driving.',
-      };
-    }
-
-    if (context.risk === 'critical' || context.driverAttention === 'critical') {
-      return {
-        safety: 'modified',
-        outputMode: 'speech',
-        text: 'Emergency guidance active. Please focus on safety instructions.',
-        reason: 'Critical state allows only short safety-oriented spoken output.',
-      };
-    }
-
-    if (safeConfidence < 45) {
-      return {
-        safety: 'modified',
-        outputMode: context.vehicleState === 'driving' ? 'speech' : 'speechAndText',
-        text: 'I am not confident enough to act on that. Please repeat or choose a safer cabin control.',
-        reason: 'Low-confidence language-model output must not directly control cabin behaviour.',
-      };
-    }
-
-    if (context.vehicleState === 'driving' || context.driverAttention === 'highLoad') {
-      return {
-        safety: 'modified',
-        outputMode: 'speech',
-        text: truncateForDriver(response.text, 120),
-        reason: 'Driving state requires concise voice-first output.',
-      };
-    }
-
-    return {
-      safety: 'allowed',
-      outputMode: 'speechAndText',
-      text: response.text.trim(),
-      reason: 'Parked or low-load state allows richer output.',
-    };
   }
 }
 
