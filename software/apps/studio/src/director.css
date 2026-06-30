@@ -1,0 +1,81 @@
+.aura-director {
+  margin-bottom: 1rem;
+}
+
+.director-map {
+  position: relative;
+  display: grid;
+  grid-template-areas:
+    "windshield windshield windshield"
+    "dashboard roof projection"
+    "floor floor floor";
+  gap: 0.75rem;
+  min-height: 420px;
+  padding: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 1.4rem;
+  background: rgba(255, 255, 255, 0.035);
+}
+
+.director-zone {
+  border-radius: 1rem;
+  min-height: 90px;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  gap: 0.25rem;
+}
+
+.director-zone.selected {
+  outline: 3px solid rgba(94, 231, 255, 0.9);
+}
+
+.director-zone small {
+  color: #9fb4c8;
+}
+
+.director-windshield {
+  grid-area: windshield;
+}
+
+.director-dashboard {
+  grid-area: dashboard;
+}
+
+.director-roof {
+  grid-area: roof;
+  min-height: 190px;
+}
+
+.director-projection {
+  grid-area: projection;
+}
+
+.director-floor {
+  grid-area: floor;
+}
+
+.director-controls {
+  display: grid;
+  gap: 0.75rem;
+  margin-top: 1rem;
+  padding: 1rem;
+  border-radius: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.035);
+}
+
+.director-controls label {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.director-controls input[type="range"] {
+  width: 100%;
+}
+
+.director-state-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
