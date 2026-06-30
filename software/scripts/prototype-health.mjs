@@ -5,9 +5,11 @@ const root = process.cwd();
 const checks = [
   ['Studio app', 'software/apps/studio/src/main.tsx'],
   ['AURA Director', 'software/apps/studio/src/AuraDirector.tsx'],
+  ['AURA Brain panel', 'software/apps/studio/src/BrainPanel.tsx'],
   ['Companion panel', 'software/apps/studio/src/CompanionPanel.tsx'],
   ['Calibration output', 'software/apps/studio/src/CalibrationOutput.tsx'],
   ['Output manager', 'software/packages/output-manager/src/index.ts'],
+  ['AURA Brain engine', 'software/packages/brain/src/index.ts'],
   ['Companion engine', 'software/packages/companion/src/index.ts'],
   ['Profile store', 'software/packages/profile-store/src/index.ts'],
   ['Hardware guide', 'docs/software/phase-g-hardware-run-guide.md'],
