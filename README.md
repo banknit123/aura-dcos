@@ -12,6 +12,8 @@ The project combines engineering documentation, modular software packages, digit
 
 **OEM Adapter Toolkit** is complete. It provides adapter scaffolding, signal mapping templates, ECU scanner templates, diagnostics connector templates and compatibility reporting through `@aura-dcos/oem-adapter-toolkit`.
 
+**Vehicle Profile System** is complete. It provides model/year profile schemas, display/control/sensor definitions, bus mapping references, profile validation and a reference SUV profile through `@aura-dcos/vehicle-profile-system`.
+
 **Studio Track STU-1 through STU-5** is complete.
 
 **Phase V: Production Vehicle Integration Framework** is complete. It adds the production HAL, vehicle communication backbone, signal manager, ECU discovery, sensor abstractions, body/comfort/audio controllers, OTA lifecycle, secure gateway, OEM adapter SDK and Vehicle Integration Studio model.
@@ -44,6 +46,7 @@ aura-dcos/
 
 - `@aura-dcos/core-stability`
 - `@aura-dcos/oem-adapter-toolkit`
+- `@aura-dcos/vehicle-profile-system`
 - `@aura-dcos/kernel`
 - `@aura-dcos/events`
 - `@aura-dcos/logger`
@@ -122,6 +125,7 @@ npm run release:check
 
 - AURA Core v1.0 Freeze — see `docs/software/core-freeze-v1.md`, `docs/software/core-compatibility-policy.md`, and `docs/software/core-release-manifest-v1.json`.
 - OEM Adapter Toolkit — see `docs/software/oem-adapter-toolkit.md`.
+- Vehicle Profile System — see `docs/software/vehicle-profile-system.md`.
 - Phase V: Vehicle Integration Framework — see `docs/software/phase-v*.md`.
 - Phase W: Cinematic Graphics Engine — see `docs/software/phase-w-cinematic-graphics-engine.md`.
 - Phase X: AI Cabin Intelligence — see `docs/software/phase-x-ai-cabin-intelligence.md`.
