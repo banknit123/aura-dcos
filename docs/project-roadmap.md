@@ -29,6 +29,9 @@ This roadmap is the authoritative checklist for AURA DCOS development across cha
 | U | Complete | Experience Director and Studio production demo track |
 | V | Complete | Production Vehicle Integration Framework |
 | W | Complete | Cinematic Graphics Engine |
+| X | Complete | AI Cabin Intelligence |
+| Y | Complete | OEM Configuration Studio |
+| Z | Complete | Production Release |
 
 ## Studio production track
 
@@ -41,8 +44,6 @@ This roadmap is the authoritative checklist for AURA DCOS development across cha
 | STU-5 Demo Runbook | Complete | Demo runbook completed |
 
 ## Phase V - Vehicle Integration Framework
-
-Phase V turns earlier prototype-level vehicle integration into production-grade automotive platform seams. Packages remain adapter-first, safe-by-default and mock/simulator runnable without real vehicle hardware.
 
 | Order | Package | Status | Deliverables |
 | --- | --- | --- | --- |
@@ -67,19 +68,14 @@ Phase V turns earlier prototype-level vehicle integration into production-grade 
 | V-19 | OEM Adapter SDK | Complete | Adapter manifest, validation, checklist, tests, docs |
 | V-20 | Vehicle Integration Studio | Complete | Studio panels for discovery, diagnostics, signal watch, command simulation, sensors, OTA and OEM adapters |
 
-## Phase W - Cinematic Graphics Engine
+## Final production phases
 
-| Package | Status | Deliverables |
-| --- | --- | --- |
-| W-01 Cinematic Graphics Engine | Complete | Graphics surfaces, shader/effect descriptors, particles, cinematic layers/scenes, transitions, frame planning, quality budgets, driver-visible safety checks, docs, tests |
-
-## Next phases
-
-| Phase | Status | Scope |
-| --- | --- | --- |
-| X | Next | AI Cabin Intelligence: memory, emotion and personalization |
-| Y | Planned | OEM Configuration Studio for manufacturer customization tools |
-| Z | Planned | Production Release: installer, diagnostics, documentation and packaging |
+| Phase | Status | Package | Deliverables |
+| --- | --- | --- | --- |
+| W | Complete | `@aura-dcos/cinematic-graphics` | Graphics surfaces, shader/effect descriptors, particles, cinematic layers/scenes, transitions, frame planning, quality budgets, driver-visible safety checks, docs, tests |
+| X | Complete | `@aura-dcos/ai-cabin-intelligence` | Consent-aware memory, emotion inference, personalization actions, safety suggestions, docs, tests |
+| Y | Complete | `@aura-dcos/oem-configuration-studio` | OEM themes, surface configuration, feature enablement, certification tracking, exportable profiles, docs, tests |
+| Z | Complete | `@aura-dcos/production-release` | Release candidates, artifacts, readiness gates, reports, docs, tests |
 
 ## Delivery rules
 
