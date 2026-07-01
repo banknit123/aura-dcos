@@ -6,6 +6,8 @@ The project combines engineering documentation, modular software packages, digit
 
 ## Current Build
 
+**AURA DCOS Platform v1.0 is feature complete at software-platform foundation level.**
+
 **Phase A through Phase Z** are complete at production-platform foundation level.
 
 **AURA Core v1.0 Freeze** is complete. Stable core APIs, adapter boundaries, compatibility rules and freeze validation are now defined in `@aura-dcos/core-stability`.
@@ -15,6 +17,10 @@ The project combines engineering documentation, modular software packages, digit
 **Vehicle Profile System** is complete. It provides model/year profile schemas, display/control/sensor definitions, bus mapping references, profile validation and a reference SUV profile through `@aura-dcos/vehicle-profile-system`.
 
 **Validation Suite** is complete. It checks required signals, unsafe commands, diagnostics readiness, OTA readiness, safety checklist status and cybersecurity checklist status through `@aura-dcos/validation-suite`.
+
+**Reference OEM Adapter** is complete. It provides a simulator-backed reference 2032 SUV adapter through `@aura-dcos/reference-oem-adapter`.
+
+**Release Packaging** is complete. It provides core, OEM adapter and vehicle profile bundle manifests, installer manifests and rollback manifests through `@aura-dcos/release-packaging`.
 
 **Studio Track STU-1 through STU-5** is complete.
 
@@ -50,6 +56,8 @@ aura-dcos/
 - `@aura-dcos/oem-adapter-toolkit`
 - `@aura-dcos/vehicle-profile-system`
 - `@aura-dcos/validation-suite`
+- `@aura-dcos/reference-oem-adapter`
+- `@aura-dcos/release-packaging`
 - `@aura-dcos/kernel`
 - `@aura-dcos/events`
 - `@aura-dcos/logger`
@@ -130,6 +138,8 @@ npm run release:check
 - OEM Adapter Toolkit — see `docs/software/oem-adapter-toolkit.md`.
 - Vehicle Profile System — see `docs/software/vehicle-profile-system.md`.
 - Validation Suite — see `docs/software/validation-suite.md`.
+- Reference OEM Adapter — see `docs/software/reference-oem-adapter.md`.
+- Release Packaging — see `docs/software/release-packaging.md`.
 - Phase V: Vehicle Integration Framework — see `docs/software/phase-v*.md`.
 - Phase W: Cinematic Graphics Engine — see `docs/software/phase-w-cinematic-graphics-engine.md`.
 - Phase X: AI Cabin Intelligence — see `docs/software/phase-x-ai-cabin-intelligence.md`.
