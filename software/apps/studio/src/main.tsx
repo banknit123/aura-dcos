@@ -11,6 +11,7 @@ import { AutonomyPanel } from './AutonomyPanel';
 import { BrainPanel } from './BrainPanel';
 import { CalibrationOutput } from './CalibrationOutput';
 import { CompanionPanel } from './CompanionPanel';
+import { ExperienceDirectorPanel, type ExperienceScene, type ExperienceSceneState } from './ExperienceDirectorPanel';
 import { OrchestrationPanel } from './OrchestrationPanel';
 import { OutputManagerPanel } from './OutputManagerPanel';
 import { ProfilePanel, type StudioProfileData } from './ProfilePanel';
@@ -308,6 +309,11 @@ function App() {
     updateShared(next, 'companion.state.updated', `AURA companion switched to ${companion.mode}`);
   }
 
+  function applyExperienceScene(scene: ExperienceScene, sceneState: ExperienceSceneState): void {
+    const next: StudioSharedState = { ...sceneState, updatedAt: new Date().toISOString() };
+    updateShared(next, 'experience.scene.broadcast', `Experience scene active: ${scene.title}`);
+  }
+
   function handleSafeVoiceResponse(response: SafeVoiceResponse): void {
     const nextCompanion: CompanionState = {
       ...shared.companion,
@@ -395,6 +401,11 @@ function App() {
             <div><dt>Occupants</dt><dd>{shared.context.occupants}</dd></div>
             <div><dt>Child Present</dt><dd>{shared.context.childPresent ? 'Yes' : 'No'}</dd></div>
           </dl>
+          <ExperienceDirectorPanel
+            baseState={{ context: shared.context, surfaces: shared.surfaces, companion: shared.companion, driverAttention: shared.driverAttention }}
+            onApplyScene={applyExperienceScene}
+            onEvent={emit}
+          />
           <div className="actions">
             <button onClick={() => runScenario('family', 'parked', 0, 'clear')}>Welcome / Family</button>
             <button onClick={() => runScenario('commute', 'driving', 48, 'clear')}>Commute</button>
