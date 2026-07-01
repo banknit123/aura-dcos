@@ -28,6 +28,7 @@ This roadmap is the authoritative checklist for AURA DCOS development across cha
 | T | Complete | Studio and integration continuation package |
 | U | Complete | Experience Director and Studio production demo track |
 | V | Complete | Production Vehicle Integration Framework |
+| W | Complete | Cinematic Graphics Engine |
 
 ## Studio production track
 
@@ -66,12 +67,17 @@ Phase V turns earlier prototype-level vehicle integration into production-grade 
 | V-19 | OEM Adapter SDK | Complete | Adapter manifest, validation, checklist, tests, docs |
 | V-20 | Vehicle Integration Studio | Complete | Studio panels for discovery, diagnostics, signal watch, command simulation, sensors, OTA and OEM adapters |
 
+## Phase W - Cinematic Graphics Engine
+
+| Package | Status | Deliverables |
+| --- | --- | --- |
+| W-01 Cinematic Graphics Engine | Complete | Graphics surfaces, shader/effect descriptors, particles, cinematic layers/scenes, transitions, frame planning, quality budgets, driver-visible safety checks, docs, tests |
+
 ## Next phases
 
 | Phase | Status | Scope |
 | --- | --- | --- |
-| W | Next | Cinematic Graphics Engine for GPU-quality immersive cabin visuals |
-| X | Planned | AI Cabin Intelligence: memory, emotion and personalization |
+| X | Next | AI Cabin Intelligence: memory, emotion and personalization |
 | Y | Planned | OEM Configuration Studio for manufacturer customization tools |
 | Z | Planned | Production Release: installer, diagnostics, documentation and packaging |
 
