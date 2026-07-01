@@ -45,11 +45,11 @@ Phase V turns earlier prototype-level vehicle integration into production-grade 
 | Order | Package | Status | Deliverables |
 | --- | --- | --- | --- |
 | V-01 | Hardware Abstraction Layer | Complete | Vehicle HAL contracts, simulator bus, command routing, signal polling, docs, tests |
-| V-02 | CAN / CAN-FD | Next | CAN frame contracts, decoder registry, safe command envelopes, tests |
-| V-03 | Automotive Ethernet | Not started | Service discovery, SOME/IP-ready seams, stream health, tests |
-| V-04 | LIN Bus | Not started | Low-speed body control abstraction, schedule tables, tests |
-| V-05 | Diagnostics | Not started | UDS / OBD-II ready architecture, diagnostic session contracts, tests |
-| V-06 | Vehicle Signal Manager | Not started | Normalized signal store, freshness, quality, subscriptions, tests |
+| V-02 | CAN / CAN-FD | Complete | CAN/CAN-FD frame contracts, filtering, codec seam, simulator driver, tests, docs |
+| V-03 | Automotive Ethernet | Complete | Service descriptors, QoS, secure-service metadata, simulator transport, tests, docs |
+| V-04 | LIN Bus | Complete | Low-speed body control abstraction, schedule tables, sleep/wake handling, tests, docs |
+| V-05 | Diagnostics | Complete | UDS / OBD-II-ready architecture, ECU identity, DTC lifecycle, sessions, tests, docs |
+| V-06 | Vehicle Signal Manager | Next | Normalized signal store, freshness, quality, subscriptions, tests |
 | V-07 | ECU Discovery | Not started | ECU identity, capability discovery, trust state, tests |
 | V-08 | Camera Abstraction | Not started | Camera endpoint contracts, metadata, frame references, tests |
 | V-09 | Radar Abstraction | Not started | Radar object list contracts and health, tests |
