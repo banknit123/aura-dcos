@@ -2,11 +2,11 @@
 
 AURA DCOS is the software foundation for the AURA Digital Cabin Operating System.
 
-The project combines engineering documentation, modular software packages, digital surface orchestration, hardware abstraction, cinematic graphics and AI-assisted cabin intelligence.
+The project combines engineering documentation, modular software packages, digital surface orchestration, hardware abstraction, cinematic graphics, AI-assisted cabin intelligence, OEM configuration and production release tooling.
 
 ## Current Build
 
-**Phase A through Phase U** are complete.
+**Phase A through Phase Z** are complete at production-platform foundation level.
 
 **Studio Track STU-1 through STU-5** is complete.
 
@@ -14,7 +14,11 @@ The project combines engineering documentation, modular software packages, digit
 
 **Phase W: Cinematic Graphics Engine** is complete. It adds render planning, shader/effect descriptors, particle systems, transitions, cabin visual scenes, quality budgets and driver-visible safety checks.
 
-**Milestone 1: Demo Ready** is the stabilization track for clean local execution and demonstration. See `docs/software/milestone-1-demo-ready.md`.
+**Phase X: AI Cabin Intelligence** is complete. It adds consent-aware memory, emotion inference, personalization planning and safety-first cabin suggestions.
+
+**Phase Y: OEM Configuration Studio** is complete. It adds OEM theming, surface configuration, feature enablement, certification tracking and exportable configuration profiles.
+
+**Phase Z: Production Release** is complete. It adds release candidates, release artifacts, readiness gates, release reporting and production validation seams.
 
 ## Repository Structure
 
@@ -61,6 +65,9 @@ aura-dcos/
 - `@aura-dcos/oem-adapter-sdk`
 - `@aura-dcos/vehicle-integration-studio`
 - `@aura-dcos/cinematic-graphics`
+- `@aura-dcos/ai-cabin-intelligence`
+- `@aura-dcos/oem-configuration-studio`
+- `@aura-dcos/production-release`
 - `@aura-dcos/digital-twin`
 - `@aura-dcos/capabilities`
 - `@aura-dcos/cabin-sync`
@@ -105,25 +112,13 @@ npm run build
 npm run release:check
 ```
 
-## Phase V Vehicle Integration Framework
+## Production Platform Tracks
 
-Phase V expands the production vehicle integration foundation. See `docs/project-roadmap.md` and `docs/software/phase-v*.md`.
-
-## Phase W Cinematic Graphics Engine
-
-Phase W adds `@aura-dcos/cinematic-graphics` for cinematic multi-surface rendering orchestration:
-
-- Graphics surface descriptors.
-- Shader/effect descriptors.
-- Particle system descriptors.
-- Cinematic layers and scenes.
-- Multi-screen frame planning.
-- Scene transitions.
-- Quality budgets.
-- Driver-visible safety checks.
-- Studio-ready snapshots.
-
-See `docs/software/phase-w-cinematic-graphics-engine.md`.
+- Phase V: Vehicle Integration Framework — see `docs/software/phase-v*.md`.
+- Phase W: Cinematic Graphics Engine — see `docs/software/phase-w-cinematic-graphics-engine.md`.
+- Phase X: AI Cabin Intelligence — see `docs/software/phase-x-ai-cabin-intelligence.md`.
+- Phase Y: OEM Configuration Studio — see `docs/software/phase-y-oem-configuration-studio.md`.
+- Phase Z: Production Release — see `docs/software/phase-z-production-release.md`.
 
 ## Project Principle
 
