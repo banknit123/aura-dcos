@@ -1,0 +1,37 @@
+{
+  "id": "aura-core-1.0.0",
+  "version": "1.0.0",
+  "status": "release-candidate",
+  "stablePackages": [
+    "@aura-dcos/runtime",
+    "@aura-dcos/events",
+    "@aura-dcos/config",
+    "@aura-dcos/surfaces",
+    "@aura-dcos/output-manager",
+    "@aura-dcos/companion",
+    "@aura-dcos/brain",
+    "@aura-dcos/voice-bridge",
+    "@aura-dcos/autonomy",
+    "@aura-dcos/digital-twin",
+    "@aura-dcos/cinematic-graphics",
+    "@aura-dcos/ai-cabin-intelligence"
+  ],
+  "adapterBoundaries": [
+    "@aura-dcos/vehicle-signals",
+    "@aura-dcos/secure-vehicle-gateway",
+    "@aura-dcos/ota-update-manager",
+    "@aura-dcos/oem-adapter-sdk",
+    "@aura-dcos/oem-configuration-studio"
+  ],
+  "requiredValidation": [
+    "npm run typecheck",
+    "npm test",
+    "npm run build",
+    "npm run release:check"
+  ],
+  "notes": [
+    "Core is frozen for OEM adapter development.",
+    "Vehicle-specific integration must use adapter boundaries.",
+    "Real vehicle deployment still requires OEM validation and certification."
+  ]
+}
