@@ -117,7 +117,7 @@ npm run release:check
 
 ## Production Platform Tracks
 
-- AURA Core v1.0 Freeze — see `docs/software/aura-core-v1-freeze.md`.
+- AURA Core v1.0 Freeze — see `docs/software/core-freeze-v1.md`, `docs/software/core-compatibility-policy.md`, and `docs/software/core-release-manifest-v1.json`.
 - Phase V: Vehicle Integration Framework — see `docs/software/phase-v*.md`.
 - Phase W: Cinematic Graphics Engine — see `docs/software/phase-w-cinematic-graphics-engine.md`.
 - Phase X: AI Cabin Intelligence — see `docs/software/phase-x-ai-cabin-intelligence.md`.
