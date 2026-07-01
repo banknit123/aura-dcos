@@ -2,7 +2,7 @@
 
 AURA DCOS is the software foundation for the AURA Digital Cabin Operating System.
 
-The project combines engineering documentation, modular software packages, digital surface orchestration, hardware abstraction and AI-assisted cabin intelligence.
+The project combines engineering documentation, modular software packages, digital surface orchestration, hardware abstraction, cinematic graphics and AI-assisted cabin intelligence.
 
 ## Current Build
 
@@ -11,6 +11,8 @@ The project combines engineering documentation, modular software packages, digit
 **Studio Track STU-1 through STU-5** is complete.
 
 **Phase V: Production Vehicle Integration Framework** is complete. It adds the production HAL, vehicle communication backbone, signal manager, ECU discovery, sensor abstractions, body/comfort/audio controllers, OTA lifecycle, secure gateway, OEM adapter SDK and Vehicle Integration Studio model.
+
+**Phase W: Cinematic Graphics Engine** is complete. It adds render planning, shader/effect descriptors, particle systems, transitions, cabin visual scenes, quality budgets and driver-visible safety checks.
 
 **Milestone 1: Demo Ready** is the stabilization track for clean local execution and demonstration. See `docs/software/milestone-1-demo-ready.md`.
 
@@ -58,6 +60,7 @@ aura-dcos/
 - `@aura-dcos/secure-vehicle-gateway`
 - `@aura-dcos/oem-adapter-sdk`
 - `@aura-dcos/vehicle-integration-studio`
+- `@aura-dcos/cinematic-graphics`
 - `@aura-dcos/digital-twin`
 - `@aura-dcos/capabilities`
 - `@aura-dcos/cabin-sync`
@@ -104,21 +107,23 @@ npm run release:check
 
 ## Phase V Vehicle Integration Framework
 
-Phase V expands the production vehicle integration foundation:
+Phase V expands the production vehicle integration foundation. See `docs/project-roadmap.md` and `docs/software/phase-v*.md`.
 
-- `@aura-dcos/hal` provides vehicle bus and endpoint primitives.
-- `@aura-dcos/can`, `@aura-dcos/automotive-ethernet` and `@aura-dcos/lin` provide communication layers.
-- `@aura-dcos/diagnostics` provides UDS/OBD-II-ready diagnostics.
-- `@aura-dcos/vehicle-signals` provides normalized signal quality and freshness.
-- `@aura-dcos/ecu-discovery` provides ECU identity, capability and trust metadata.
-- `@aura-dcos/camera`, `@aura-dcos/radar` and `@aura-dcos/lidar` provide sensor abstractions.
-- `@aura-dcos/hvac`, `@aura-dcos/seat-controller`, `@aura-dcos/door-controller`, `@aura-dcos/window-controller`, `@aura-dcos/ambient-lighting` and `@aura-dcos/audio-amplifier` provide cabin controller seams.
-- `@aura-dcos/ota-update-manager` provides OTA lifecycle tracking.
-- `@aura-dcos/secure-vehicle-gateway` provides authorization and audit policy.
-- `@aura-dcos/oem-adapter-sdk` provides OEM adapter validation.
-- `@aura-dcos/vehicle-integration-studio` provides the Studio integration panel model.
+## Phase W Cinematic Graphics Engine
 
-See the Phase V documents in `docs/software/phase-v*.md` and `docs/project-roadmap.md`.
+Phase W adds `@aura-dcos/cinematic-graphics` for cinematic multi-surface rendering orchestration:
+
+- Graphics surface descriptors.
+- Shader/effect descriptors.
+- Particle system descriptors.
+- Cinematic layers and scenes.
+- Multi-screen frame planning.
+- Scene transitions.
+- Quality budgets.
+- Driver-visible safety checks.
+- Studio-ready snapshots.
+
+See `docs/software/phase-w-cinematic-graphics-engine.md`.
 
 ## Project Principle
 
