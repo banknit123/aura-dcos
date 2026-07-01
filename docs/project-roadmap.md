@@ -38,8 +38,8 @@ This roadmap is the authoritative checklist for AURA DCOS development across cha
 | Phase | Status | Package | Deliverables |
 | --- | --- | --- | --- |
 | 1 | Complete | `@aura-dcos/core-stability` | AURA Core v1.0 freeze manifest, stable API registry, adapter boundaries, compatibility rules, freeze validation, docs, tests |
-| 2 | Next | OEM Adapter Toolkit | Adapter generator, signal mapping templates, ECU scanner, diagnostics connector, compatibility report |
-| 3 | Planned | Vehicle Profile System | Model/year profiles for displays, controls, sensors, bus mappings and cabin features |
+| 2 | Complete | `@aura-dcos/oem-adapter-toolkit` | Adapter generator, signal mapping templates, ECU scanner templates, diagnostics connector templates, compatibility report, docs, tests |
+| 3 | Next | Vehicle Profile System | Model/year profiles for displays, controls, sensors, bus mappings and cabin features |
 | 4 | Planned | Validation Suite | Missing signal detection, unsafe command detection, diagnostics readiness, OTA readiness and safety/cyber checklist |
 | 5 | Planned | Reference OEM Adapter | Simulator-backed reference adapter and sample SUV profile |
 | 6 | Planned | Release Packaging | Core, adapter and vehicle profile bundle manifests with validation report |
