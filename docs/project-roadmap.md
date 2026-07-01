@@ -44,8 +44,8 @@ Phase V turns earlier prototype-level vehicle integration into production-grade 
 
 | Order | Package | Status | Deliverables |
 | --- | --- | --- | --- |
-| V-01 | Hardware Abstraction Layer | In progress | Vehicle HAL contracts, simulator bus, command routing, signal polling, docs, tests |
-| V-02 | CAN / CAN-FD | Not started | CAN frame contracts, decoder registry, safe command envelopes, tests |
+| V-01 | Hardware Abstraction Layer | Complete | Vehicle HAL contracts, simulator bus, command routing, signal polling, docs, tests |
+| V-02 | CAN / CAN-FD | Next | CAN frame contracts, decoder registry, safe command envelopes, tests |
 | V-03 | Automotive Ethernet | Not started | Service discovery, SOME/IP-ready seams, stream health, tests |
 | V-04 | LIN Bus | Not started | Low-speed body control abstraction, schedule tables, tests |
 | V-05 | Diagnostics | Not started | UDS / OBD-II ready architecture, diagnostic session contracts, tests |
