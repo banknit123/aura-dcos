@@ -41,8 +41,12 @@ This roadmap is the authoritative checklist for AURA DCOS development across cha
 | 2 | Complete | `@aura-dcos/oem-adapter-toolkit` | Adapter generator, signal mapping templates, ECU scanner templates, diagnostics connector templates, compatibility report, docs, tests |
 | 3 | Complete | `@aura-dcos/vehicle-profile-system` | Model/year profiles, display/control/sensor schemas, bus mapping references, validation, reference SUV profile, docs, tests |
 | 4 | Complete | `@aura-dcos/validation-suite` | Missing signal detection, unsafe command detection, diagnostics readiness, OTA readiness, safety/cyber checklist, docs, tests |
-| 5 | Next | Reference OEM Adapter | Simulator-backed reference adapter and sample SUV profile |
-| 6 | Planned | Release Packaging | Core, adapter and vehicle profile bundle manifests with validation report |
+| 5 | Complete | `@aura-dcos/reference-oem-adapter` | Simulator-backed reference 2032 SUV adapter, ECU topology, CAN-FD/LIN/Ethernet mappings, diagnostics, sensor bindings, docs, tests |
+| 6 | Complete | `@aura-dcos/release-packaging` | Core, adapter and vehicle profile bundle manifests, installer manifest, rollback manifest, validation, docs, tests |
+
+## Platform v1.0 status
+
+AURA DCOS Platform v1.0 is feature complete at software-platform foundation level. Future work moves from platform construction to OEM-specific integration, real hardware bring-up, certification, HIL testing and commercialization assets.
 
 ## Studio production track
 
@@ -53,40 +57,6 @@ This roadmap is the authoritative checklist for AURA DCOS development across cha
 | STU-3 Emotion Engine | Complete | Emotion Engine package created |
 | STU-4 Keynote Mode | Complete | Keynote Mode package created |
 | STU-5 Demo Runbook | Complete | Demo runbook completed |
-
-## Phase V - Vehicle Integration Framework
-
-| Order | Package | Status | Deliverables |
-| --- | --- | --- | --- |
-| V-01 | Hardware Abstraction Layer | Complete | Vehicle HAL contracts, simulator bus, command routing, signal polling, docs, tests |
-| V-02 | CAN / CAN-FD | Complete | CAN/CAN-FD frame contracts, filtering, codec seam, simulator driver, tests, docs |
-| V-03 | Automotive Ethernet | Complete | Service descriptors, QoS, secure-service metadata, simulator transport, tests, docs |
-| V-04 | LIN Bus | Complete | Low-speed body control abstraction, schedule tables, sleep/wake handling, tests, docs |
-| V-05 | Diagnostics | Complete | UDS / OBD-II-ready architecture, ECU identity, DTC lifecycle, sessions, tests, docs |
-| V-06 | Vehicle Signal Manager | Complete | Normalized signal store, freshness, quality, subscriptions, tests, docs |
-| V-07 | ECU Discovery | Complete | ECU identity, capability discovery, trust state, simulator probe, tests, docs |
-| V-08 | Camera Abstraction | Complete | Camera endpoint contracts, metadata, frame references, simulator provider, tests, docs |
-| V-09 | Radar Abstraction | Complete | Radar object list contracts, endpoint health, simulator provider, tests, docs |
-| V-10 | LiDAR Abstraction | Complete | Point-cloud reference contracts, endpoint health, simulator provider, tests, docs |
-| V-11 | HVAC Integration | Complete | HVAC controller adapter, safety limits, tests, docs |
-| V-12 | Seat Controller | Complete | Seat presets, movement policies, tests, docs |
-| V-13 | Door Controller | Complete | Lock, child-lock and ajar abstractions, movement policy, docs |
-| V-14 | Window Controller | Complete | Window position commands and obstruction sensor policy, docs |
-| V-15 | Ambient Lighting Controller | Complete | Zone lighting adapter, scene policies, docs |
-| V-16 | Audio Amplifier Interface | Complete | Amp zones, gain, mute, voice ducking, docs |
-| V-17 | OTA Update Manager | Complete | Update campaign lifecycle, parked install policy, tests, docs |
-| V-18 | Secure Vehicle Gateway | Complete | Policy enforcement, trusted ECU routing, audit events, tests, docs |
-| V-19 | OEM Adapter SDK | Complete | Adapter manifest, validation, checklist, tests, docs |
-| V-20 | Vehicle Integration Studio | Complete | Studio panels for discovery, diagnostics, signal watch, command simulation, sensors, OTA and OEM adapters |
-
-## Final production phases
-
-| Phase | Status | Package | Deliverables |
-| --- | --- | --- | --- |
-| W | Complete | `@aura-dcos/cinematic-graphics` | Graphics surfaces, shader/effect descriptors, particles, cinematic layers/scenes, transitions, frame planning, quality budgets, driver-visible safety checks, docs, tests |
-| X | Complete | `@aura-dcos/ai-cabin-intelligence` | Consent-aware memory, emotion inference, personalization actions, safety suggestions, docs, tests |
-| Y | Complete | `@aura-dcos/oem-configuration-studio` | OEM themes, surface configuration, feature enablement, certification tracking, exportable profiles, docs, tests |
-| Z | Complete | `@aura-dcos/production-release` | Release candidates, artifacts, readiness gates, reports, docs, tests |
 
 ## Delivery rules
 
