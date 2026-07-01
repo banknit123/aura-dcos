@@ -2,7 +2,6 @@ import React, { useMemo, useState } from 'react';
 import { type AuraCabinContext } from '@aura-dcos/digital-twin';
 import { type AuraSurface, type SurfaceState } from '@aura-dcos/surfaces';
 import { type CompanionState, type DriverAttentionState } from '@aura-dcos/companion';
-import './ExperienceDirectorPanel.css';
 
 export interface ExperienceSceneState {
   context: AuraCabinContext;
