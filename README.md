@@ -10,6 +10,8 @@ The project combines engineering documentation, modular software packages, digit
 
 **AURA Core v1.0 Freeze** is complete. Stable core APIs, adapter boundaries, compatibility rules and freeze validation are now defined in `@aura-dcos/core-stability`.
 
+**OEM Adapter Toolkit** is complete. It provides adapter scaffolding, signal mapping templates, ECU scanner templates, diagnostics connector templates and compatibility reporting through `@aura-dcos/oem-adapter-toolkit`.
+
 **Studio Track STU-1 through STU-5** is complete.
 
 **Phase V: Production Vehicle Integration Framework** is complete. It adds the production HAL, vehicle communication backbone, signal manager, ECU discovery, sensor abstractions, body/comfort/audio controllers, OTA lifecycle, secure gateway, OEM adapter SDK and Vehicle Integration Studio model.
@@ -41,6 +43,7 @@ aura-dcos/
 ## Included packages
 
 - `@aura-dcos/core-stability`
+- `@aura-dcos/oem-adapter-toolkit`
 - `@aura-dcos/kernel`
 - `@aura-dcos/events`
 - `@aura-dcos/logger`
@@ -118,6 +121,7 @@ npm run release:check
 ## Production Platform Tracks
 
 - AURA Core v1.0 Freeze — see `docs/software/core-freeze-v1.md`, `docs/software/core-compatibility-policy.md`, and `docs/software/core-release-manifest-v1.json`.
+- OEM Adapter Toolkit — see `docs/software/oem-adapter-toolkit.md`.
 - Phase V: Vehicle Integration Framework — see `docs/software/phase-v*.md`.
 - Phase W: Cinematic Graphics Engine — see `docs/software/phase-w-cinematic-graphics-engine.md`.
 - Phase X: AI Cabin Intelligence — see `docs/software/phase-x-ai-cabin-intelligence.md`.
