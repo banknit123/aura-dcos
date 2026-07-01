@@ -49,12 +49,12 @@ Phase V turns earlier prototype-level vehicle integration into production-grade 
 | V-03 | Automotive Ethernet | Complete | Service descriptors, QoS, secure-service metadata, simulator transport, tests, docs |
 | V-04 | LIN Bus | Complete | Low-speed body control abstraction, schedule tables, sleep/wake handling, tests, docs |
 | V-05 | Diagnostics | Complete | UDS / OBD-II-ready architecture, ECU identity, DTC lifecycle, sessions, tests, docs |
-| V-06 | Vehicle Signal Manager | Next | Normalized signal store, freshness, quality, subscriptions, tests |
-| V-07 | ECU Discovery | Not started | ECU identity, capability discovery, trust state, tests |
-| V-08 | Camera Abstraction | Not started | Camera endpoint contracts, metadata, frame references, tests |
-| V-09 | Radar Abstraction | Not started | Radar object list contracts and health, tests |
-| V-10 | LiDAR Abstraction | Not started | Point-cloud metadata contracts and health, tests |
-| V-11 | HVAC Integration | Not started | HVAC controller adapter and safety limits, tests |
+| V-06 | Vehicle Signal Manager | Complete | Normalized signal store, freshness, quality, subscriptions, tests, docs |
+| V-07 | ECU Discovery | Complete | ECU identity, capability discovery, trust state, simulator probe, tests, docs |
+| V-08 | Camera Abstraction | Complete | Camera endpoint contracts, metadata, frame references, simulator provider, tests, docs |
+| V-09 | Radar Abstraction | Complete | Radar object list contracts, endpoint health, simulator provider, tests, docs |
+| V-10 | LiDAR Abstraction | Complete | Point-cloud reference contracts, endpoint health, simulator provider, tests, docs |
+| V-11 | HVAC Integration | Next | HVAC controller adapter and safety limits, tests |
 | V-12 | Seat Controller | Not started | Seat presets, movement policies, tests |
 | V-13 | Door Controller | Not started | Lock, latch and ajar signals, tests |
 | V-14 | Window Controller | Not started | Window position commands and anti-pinch policy seam, tests |
