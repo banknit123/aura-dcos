@@ -44,6 +44,12 @@ This roadmap is the authoritative checklist for AURA DCOS development across cha
 | 5 | Complete | `@aura-dcos/reference-oem-adapter` | Simulator-backed reference 2032 SUV adapter, ECU topology, CAN-FD/LIN/Ethernet mappings, diagnostics, sensor bindings, docs, tests |
 | 6 | Complete | `@aura-dcos/release-packaging` | Core, adapter and vehicle profile bundle manifests, installer manifest, rollback manifest, validation, docs, tests |
 
+## Companion Personalization Track
+
+| Package | Status | Deliverables |
+| --- | --- | --- |
+| `@aura-dcos/companion-ecosystem` | Complete | Default light-being companion, animal companions, user-personalized profiles, role/personality settings, movement styles, driving safety policies, marketplace-ready metadata, docs, tests |
+
 ## Platform v1.0 status
 
 AURA DCOS Platform v1.0 is feature complete at software-platform foundation level. Future work moves from platform construction to OEM-specific integration, real hardware bring-up, certification, HIL testing and commercialization assets.
