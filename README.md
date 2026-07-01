@@ -42,6 +42,8 @@ The project combines engineering documentation, modular software packages, digit
 
 **Phase R: Vehicle Integration Framework** adds hardware discovery, cabin profiles, display mapping, integration gateway, diagnostics and simulator-backed vehicle integration adapters.
 
+**Phase V: Production Vehicle Integration Framework** is now underway. V1 through V5 add a production HAL foundation, CAN/CAN-FD, Automotive Ethernet, LIN and Diagnostics architecture.
+
 **Milestone 1: Demo Ready** is the stabilization track for clean local execution and demonstration. See `docs/software/milestone-1-demo-ready.md`.
 
 ## Repository Structure
@@ -69,6 +71,10 @@ aura-dcos/
 - `@aura-dcos/runtime`
 - `@aura-dcos/surfaces`
 - `@aura-dcos/hal`
+- `@aura-dcos/can`
+- `@aura-dcos/automotive-ethernet`
+- `@aura-dcos/lin`
+- `@aura-dcos/diagnostics`
 - `@aura-dcos/digital-twin`
 - `@aura-dcos/capabilities`
 - `@aura-dcos/cabin-sync`
@@ -190,6 +196,18 @@ Phase R adds `@aura-dcos/vehicle-integration`, the plug-in style integration lay
 Phase R makes AURA hardware-adaptive and integration-ready. It does not claim zero-work installation into every production vehicle. Real production deployment still requires OEM adapters, vehicle safety gateways, cybersecurity controls and regional HMI compliance processes.
 
 See `docs/software/phase-r-vehicle-integration-framework.md`.
+
+## Phase V Vehicle Communication Backbone
+
+Phase V expands the production vehicle integration foundation:
+
+- `@aura-dcos/hal` now includes production-oriented vehicle bus and endpoint primitives.
+- `@aura-dcos/can` provides CAN/CAN-FD frame validation, filtering, arbitration-ready interfaces, signal codec seams and simulator support.
+- `@aura-dcos/automotive-ethernet` provides service-oriented Ethernet descriptors, QoS, secure-service metadata and simulator transport.
+- `@aura-dcos/lin` provides LIN frame definitions, schedule tables, sleep/wake handling and body electronics simulator support.
+- `@aura-dcos/diagnostics` provides UDS/OBD-II-ready diagnostics, ECU identity, session control, security access seams, DTC lifecycle and live data access.
+
+See the Phase V documents in `docs/software/phase-v*.md`.
 
 ## Hardware guide
 
