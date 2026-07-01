@@ -27,6 +27,7 @@ This roadmap is the authoritative checklist for AURA DCOS development across cha
 | S | Complete | Vehicle platform/studio continuation package |
 | T | Complete | Studio and integration continuation package |
 | U | Complete | Experience Director and Studio production demo track |
+| V | Complete | Production Vehicle Integration Framework |
 
 ## Studio production track
 
@@ -40,7 +41,7 @@ This roadmap is the authoritative checklist for AURA DCOS development across cha
 
 ## Phase V - Vehicle Integration Framework
 
-Phase V turns earlier prototype-level vehicle integration into production-grade automotive platform seams. Packages must remain adapter-first, safe-by-default and mock/simulator runnable without real vehicle hardware.
+Phase V turns earlier prototype-level vehicle integration into production-grade automotive platform seams. Packages remain adapter-first, safe-by-default and mock/simulator runnable without real vehicle hardware.
 
 | Order | Package | Status | Deliverables |
 | --- | --- | --- | --- |
@@ -54,22 +55,22 @@ Phase V turns earlier prototype-level vehicle integration into production-grade 
 | V-08 | Camera Abstraction | Complete | Camera endpoint contracts, metadata, frame references, simulator provider, tests, docs |
 | V-09 | Radar Abstraction | Complete | Radar object list contracts, endpoint health, simulator provider, tests, docs |
 | V-10 | LiDAR Abstraction | Complete | Point-cloud reference contracts, endpoint health, simulator provider, tests, docs |
-| V-11 | HVAC Integration | Next | HVAC controller adapter and safety limits, tests |
-| V-12 | Seat Controller | Not started | Seat presets, movement policies, tests |
-| V-13 | Door Controller | Not started | Lock, latch and ajar signals, tests |
-| V-14 | Window Controller | Not started | Window position commands and anti-pinch policy seam, tests |
-| V-15 | Ambient Lighting Controller | Not started | Zone lighting adapter, scene policies, tests |
-| V-16 | Audio Amplifier Interface | Not started | Amp zones, gain, mute, voice ducking, tests |
-| V-17 | OTA Update Manager | Not started | Update campaign lifecycle, rollback state, tests |
-| V-18 | Secure Vehicle Gateway | Not started | Policy enforcement, secure bus routing, audit events, tests |
-| V-19 | OEM Adapter SDK | Not started | Adapter manifest, certification checklist, examples, tests |
-| V-20 | Vehicle Integration Studio | Not started | Studio panels for discovery, diagnostics, signal watch and command simulation |
+| V-11 | HVAC Integration | Complete | HVAC controller adapter, safety limits, tests, docs |
+| V-12 | Seat Controller | Complete | Seat presets, movement policies, tests, docs |
+| V-13 | Door Controller | Complete | Lock, child-lock and ajar abstractions, movement policy, docs |
+| V-14 | Window Controller | Complete | Window position commands and obstruction sensor policy, docs |
+| V-15 | Ambient Lighting Controller | Complete | Zone lighting adapter, scene policies, docs |
+| V-16 | Audio Amplifier Interface | Complete | Amp zones, gain, mute, voice ducking, docs |
+| V-17 | OTA Update Manager | Complete | Update campaign lifecycle, parked install policy, tests, docs |
+| V-18 | Secure Vehicle Gateway | Complete | Policy enforcement, trusted ECU routing, audit events, tests, docs |
+| V-19 | OEM Adapter SDK | Complete | Adapter manifest, validation, checklist, tests, docs |
+| V-20 | Vehicle Integration Studio | Complete | Studio panels for discovery, diagnostics, signal watch, command simulation, sensors, OTA and OEM adapters |
 
 ## Next phases
 
 | Phase | Status | Scope |
 | --- | --- | --- |
-| W | Planned | Cinematic Graphics Engine for GPU-quality immersive cabin visuals |
+| W | Next | Cinematic Graphics Engine for GPU-quality immersive cabin visuals |
 | X | Planned | AI Cabin Intelligence: memory, emotion and personalization |
 | Y | Planned | OEM Configuration Studio for manufacturer customization tools |
 | Z | Planned | Production Release: installer, diagnostics, documentation and packaging |
