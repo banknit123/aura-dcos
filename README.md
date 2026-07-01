@@ -42,7 +42,7 @@ The project combines engineering documentation, modular software packages, digit
 
 **Phase R: Vehicle Integration Framework** adds hardware discovery, cabin profiles, display mapping, integration gateway, diagnostics and simulator-backed vehicle integration adapters.
 
-**Phase V: Production Vehicle Integration Framework** is now underway. V1 through V5 add a production HAL foundation, CAN/CAN-FD, Automotive Ethernet, LIN and Diagnostics architecture.
+**Phase V: Production Vehicle Integration Framework** is now underway. V1 through V10 add the production HAL, vehicle communication backbone, signal manager, ECU discovery, and camera/radar/LiDAR abstractions.
 
 **Milestone 1: Demo Ready** is the stabilization track for clean local execution and demonstration. See `docs/software/milestone-1-demo-ready.md`.
 
@@ -75,6 +75,11 @@ aura-dcos/
 - `@aura-dcos/automotive-ethernet`
 - `@aura-dcos/lin`
 - `@aura-dcos/diagnostics`
+- `@aura-dcos/vehicle-signals`
+- `@aura-dcos/ecu-discovery`
+- `@aura-dcos/camera`
+- `@aura-dcos/radar`
+- `@aura-dcos/lidar`
 - `@aura-dcos/digital-twin`
 - `@aura-dcos/capabilities`
 - `@aura-dcos/cabin-sync`
@@ -197,7 +202,7 @@ Phase R makes AURA hardware-adaptive and integration-ready. It does not claim ze
 
 See `docs/software/phase-r-vehicle-integration-framework.md`.
 
-## Phase V Vehicle Communication Backbone
+## Phase V Vehicle Integration Framework
 
 Phase V expands the production vehicle integration foundation:
 
@@ -206,6 +211,9 @@ Phase V expands the production vehicle integration foundation:
 - `@aura-dcos/automotive-ethernet` provides service-oriented Ethernet descriptors, QoS, secure-service metadata and simulator transport.
 - `@aura-dcos/lin` provides LIN frame definitions, schedule tables, sleep/wake handling and body electronics simulator support.
 - `@aura-dcos/diagnostics` provides UDS/OBD-II-ready diagnostics, ECU identity, session control, security access seams, DTC lifecycle and live data access.
+- `@aura-dcos/vehicle-signals` provides a normalized signal store with freshness, quality and subscriptions.
+- `@aura-dcos/ecu-discovery` provides ECU discovery, capability and trust-state metadata.
+- `@aura-dcos/camera`, `@aura-dcos/radar` and `@aura-dcos/lidar` provide sensor endpoint abstractions for future perception, digital twin and Studio integrations.
 
 See the Phase V documents in `docs/software/phase-v*.md`.
 
