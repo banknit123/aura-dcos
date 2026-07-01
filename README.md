@@ -8,6 +8,8 @@ The project combines engineering documentation, modular software packages, digit
 
 **Phase A through Phase Z** are complete at production-platform foundation level.
 
+**AURA Core v1.0 Freeze** is complete. Stable core APIs, adapter boundaries, compatibility rules and freeze validation are now defined in `@aura-dcos/core-stability`.
+
 **Studio Track STU-1 through STU-5** is complete.
 
 **Phase V: Production Vehicle Integration Framework** is complete. It adds the production HAL, vehicle communication backbone, signal manager, ECU discovery, sensor abstractions, body/comfort/audio controllers, OTA lifecycle, secure gateway, OEM adapter SDK and Vehicle Integration Studio model.
@@ -38,6 +40,7 @@ aura-dcos/
 
 ## Included packages
 
+- `@aura-dcos/core-stability`
 - `@aura-dcos/kernel`
 - `@aura-dcos/events`
 - `@aura-dcos/logger`
@@ -114,6 +117,7 @@ npm run release:check
 
 ## Production Platform Tracks
 
+- AURA Core v1.0 Freeze — see `docs/software/aura-core-v1-freeze.md`.
 - Phase V: Vehicle Integration Framework — see `docs/software/phase-v*.md`.
 - Phase W: Cinematic Graphics Engine — see `docs/software/phase-w-cinematic-graphics-engine.md`.
 - Phase X: AI Cabin Intelligence — see `docs/software/phase-x-ai-cabin-intelligence.md`.
