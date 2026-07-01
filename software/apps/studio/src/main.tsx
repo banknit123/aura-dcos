@@ -4,6 +4,7 @@ import { createAuraAutonomyEngine, type AutonomyCycleResult, type AutonomySignal
 import { type BrainDecision } from '@aura-dcos/brain';
 import { type CompanionState, type DriverAttentionState } from '@aura-dcos/companion';
 import { createAuraDigitalTwin, type AuraCabinContext } from '@aura-dcos/digital-twin';
+import { type ExperienceScene } from '@aura-dcos/experience-director';
 import { createAuraSurfaceRegistry, type AuraSurface, type SurfaceState } from '@aura-dcos/surfaces';
 import { type SafeVoiceResponse } from '@aura-dcos/voice-bridge';
 import { AuraDirector } from './AuraDirector';
@@ -11,7 +12,7 @@ import { AutonomyPanel } from './AutonomyPanel';
 import { BrainPanel } from './BrainPanel';
 import { CalibrationOutput } from './CalibrationOutput';
 import { CompanionPanel } from './CompanionPanel';
-import { ExperienceDirectorPanel, type ExperienceScene, type ExperienceSceneState } from './ExperienceDirectorPanel';
+import { ExperienceDirectorPanel, type ExperienceSceneState } from './ExperienceDirectorPanel';
 import { OrchestrationPanel } from './OrchestrationPanel';
 import { OutputManagerPanel } from './OutputManagerPanel';
 import { ProfilePanel, type StudioProfileData } from './ProfilePanel';
