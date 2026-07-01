@@ -2,7 +2,7 @@
 
 AURA DCOS is the software foundation for the AURA Digital Cabin Operating System.
 
-The project combines engineering documentation, modular software packages, digital surface orchestration, hardware abstraction, cinematic graphics, AI-assisted cabin intelligence, OEM configuration and production release tooling.
+The project combines engineering documentation, modular software packages, digital surface orchestration, hardware abstraction, cinematic graphics, AI-assisted cabin intelligence, companion personalization, OEM configuration and production release tooling.
 
 ## Current Build
 
@@ -21,6 +21,8 @@ The project combines engineering documentation, modular software packages, digit
 **Reference OEM Adapter** is complete. It provides a simulator-backed reference 2032 SUV adapter through `@aura-dcos/reference-oem-adapter`.
 
 **Release Packaging** is complete. It provides core, OEM adapter and vehicle profile bundle manifests, installer manifests and rollback manifests through `@aura-dcos/release-packaging`.
+
+**Companion Ecosystem** is complete. It provides selectable and user-personalized companions, animal companions, movement styles, safety behavior policies and marketplace-ready metadata through `@aura-dcos/companion-ecosystem`.
 
 **Studio Track STU-1 through STU-5** is complete.
 
@@ -58,6 +60,7 @@ aura-dcos/
 - `@aura-dcos/validation-suite`
 - `@aura-dcos/reference-oem-adapter`
 - `@aura-dcos/release-packaging`
+- `@aura-dcos/companion-ecosystem`
 - `@aura-dcos/kernel`
 - `@aura-dcos/events`
 - `@aura-dcos/logger`
@@ -140,6 +143,7 @@ npm run release:check
 - Validation Suite — see `docs/software/validation-suite.md`.
 - Reference OEM Adapter — see `docs/software/reference-oem-adapter.md`.
 - Release Packaging — see `docs/software/release-packaging.md`.
+- Companion Ecosystem — see `docs/software/companion-ecosystem.md`.
 - Phase V: Vehicle Integration Framework — see `docs/software/phase-v*.md`.
 - Phase W: Cinematic Graphics Engine — see `docs/software/phase-w-cinematic-graphics-engine.md`.
 - Phase X: AI Cabin Intelligence — see `docs/software/phase-x-ai-cabin-intelligence.md`.
