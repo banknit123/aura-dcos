@@ -55,8 +55,8 @@ This roadmap is the authoritative checklist for AURA DCOS development across cha
 | Sprint | Status | Deliverables |
 | --- | --- | --- |
 | 1 | Complete | Premium immersive shell, left navigation, hero landing screen, live vehicle preview placeholder, right status rail, companion orb, demo timeline, Engineering Mode switch, docs |
-| 2 | Next | Interactive vehicle and digital cabin preview with selectable surfaces |
-| 3 | Planned | Live experience engine controls and animated cabin theme switching |
+| 2 | Complete | Interactive vehicle/front/rear cabin preview, selectable surfaces, transparent/digital windshield toggle, surface detail panel, rear cabin full digital seat-back/floor/roof/rear-wall presentation, docs |
+| 3 | Next | Live experience engine controls and animated cabin theme switching |
 | 4 | Planned | Companion Studio UI and companion selection/creation preview |
 | 5 | Planned | Vehicle integration visualizer and diagnostics presentation layer |
 | 6 | Planned | Guided demo mode and presentation timeline |
