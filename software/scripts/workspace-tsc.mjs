@@ -13,7 +13,7 @@ function workspaceDirs() {
   const dirs = [];
   for (const workspaceRoot of workspaceRoots) {
     if (!existsSync(workspaceRoot)) continue;
-    for (const entry of readdirSync(workspaceRoot, { withFileTypes: true })) {
+    for (const entry of readdirSync(workspaceRoot, { withFileTypes: true }).sort((a, b) => a.name.localeCompare(b.name))) {
       if (!entry.isDirectory()) continue;
       const dir = join(workspaceRoot, entry.name);
       if (existsSync(join(dir, 'package.json')) && existsSync(join(dir, 'tsconfig.json'))) dirs.push(dir);
@@ -36,7 +36,7 @@ for (const dir of workspaceDirs()) {
     compilerOptions: {
       outDir: 'dist',
       rootDir: 'src',
-      noEmit: mode === 'typecheck' || isStudio,
+      noEmit: isStudio,
       declaration: !isStudio,
       jsx: isStudio ? 'react-jsx' : undefined,
       lib: isStudio ? ['DOM', 'DOM.Iterable', 'ES2022'] : ['ES2022'],
