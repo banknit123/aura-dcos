@@ -5,260 +5,33 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>AURA Studio v2</title>
   <style>
-    :root {
-      --navy: #07131f;
-      --navy-2: #0b2032;
-      --glass: rgba(12, 30, 46, 0.72);
-      --line: rgba(125, 233, 255, 0.2);
-      --text: #f3fbff;
-      --muted: #9fb6c3;
-      --teal: #24e2ff;
-      --blue: #5aa9ff;
-      --violet: #a886ff;
-      --emerald: #79ffb2;
-      --amber: #ffd37a;
-    }
-
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      min-height: 100vh;
-      color: var(--text);
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background:
-        radial-gradient(circle at 20% 10%, rgba(36, 226, 255, 0.24), transparent 30%),
-        radial-gradient(circle at 80% 15%, rgba(168, 134, 255, 0.2), transparent 28%),
-        linear-gradient(135deg, #02070d 0%, var(--navy) 48%, #07111c 100%);
-      overflow-x: hidden;
-    }
-
-    body::before {
-      content: "";
-      position: fixed;
-      inset: 0;
-      background-image: linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px);
-      background-size: 80px 80px;
-      mask-image: radial-gradient(circle at center, black 0%, transparent 75%);
-      pointer-events: none;
-    }
-
-    .app-shell {
-      min-height: 100vh;
-      display: grid;
-      grid-template-columns: 250px minmax(0, 1fr) 320px;
-      grid-template-rows: 74px minmax(0, 1fr) 86px;
-      gap: 18px;
-      padding: 18px;
-    }
-
-    .topbar, .sidebar, .rightbar, .timeline, .hero-card, .glass-card {
-      border: 1px solid var(--line);
-      background: linear-gradient(145deg, rgba(14, 35, 54, 0.78), rgba(5, 15, 25, 0.56));
-      backdrop-filter: blur(22px);
-      box-shadow: 0 24px 80px rgba(0, 0, 0, 0.32), inset 0 1px 0 rgba(255,255,255,0.08);
-      border-radius: 28px;
-    }
-
-    .topbar {
-      grid-column: 1 / 4;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 24px;
-    }
-
-    .brand { display: flex; align-items: center; gap: 14px; }
-    .mark {
-      width: 42px;
-      height: 42px;
-      border-radius: 14px;
-      background: radial-gradient(circle, var(--teal), var(--blue));
-      box-shadow: 0 0 36px rgba(36, 226, 255, 0.5);
-      display: grid;
-      place-items: center;
-      color: #00131d;
-      font-weight: 900;
-      letter-spacing: -0.08em;
-    }
-    .brand strong { display:block; font-size: 15px; letter-spacing: 0.26em; }
-    .brand span { color: var(--muted); font-size: 12px; }
-
-    .mode-switch {
-      display: flex;
-      gap: 10px;
-      align-items: center;
-    }
-    .pill, button {
-      border: 1px solid rgba(125, 233, 255, 0.26);
-      color: var(--text);
-      background: rgba(255, 255, 255, 0.06);
-      border-radius: 999px;
-      padding: 11px 16px;
-      cursor: pointer;
-      transition: transform 160ms ease, border 160ms ease, background 160ms ease, box-shadow 160ms ease;
-      font-weight: 700;
-    }
-    button:hover, .pill.active { transform: translateY(-1px); border-color: var(--teal); box-shadow: 0 0 28px rgba(36, 226, 255, 0.22); background: rgba(36, 226, 255, 0.12); }
-
-    .sidebar { padding: 18px; }
-    .nav-title { color: var(--muted); font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase; margin: 4px 0 18px; }
-    .nav-item {
-      display: flex;
-      gap: 12px;
-      align-items: center;
-      padding: 14px;
-      border-radius: 18px;
-      color: var(--muted);
-      margin-bottom: 8px;
-      border: 1px solid transparent;
-    }
-    .nav-item.active, .nav-item:hover { color: var(--text); border-color: rgba(36,226,255,0.24); background: rgba(255,255,255,0.06); }
-    .nav-icon { width: 28px; height: 28px; border-radius: 10px; display:grid; place-items:center; background: rgba(36,226,255,0.12); }
-
-    .main-stage { display: grid; grid-template-rows: auto minmax(0, 1fr); gap: 18px; }
-    .hero-card { padding: 28px; position: relative; overflow: hidden; }
-    .eyebrow { color: var(--teal); font-size: 12px; letter-spacing: 0.24em; text-transform: uppercase; font-weight: 800; }
-    h1 { margin: 10px 0 10px; font-size: clamp(48px, 7vw, 94px); line-height: 0.92; letter-spacing: -0.07em; }
-    .hero-card p { max-width: 720px; color: var(--muted); font-size: 17px; line-height: 1.6; }
-    .hero-actions { display:flex; gap: 12px; flex-wrap: wrap; margin-top: 22px; }
-    .primary { background: linear-gradient(135deg, rgba(36,226,255,0.32), rgba(90,169,255,0.18)); border-color: var(--teal); }
-
-    .vehicle-stage {
-      position: relative;
-      min-height: 430px;
-      border-radius: 30px;
-      overflow: hidden;
-      border: 1px solid var(--line);
-      background:
-        radial-gradient(ellipse at center, rgba(36, 226, 255, 0.18), transparent 42%),
-        linear-gradient(180deg, rgba(10, 30, 47, 0.55), rgba(2, 8, 14, 0.85));
-    }
-    .showroom-floor {
-      position:absolute; inset:auto -20% -34% -20%; height:60%;
-      background: radial-gradient(ellipse at center, rgba(36,226,255,0.18), transparent 58%);
-      border-top: 1px solid rgba(125,233,255,0.12);
-    }
-    .vehicle {
-      position:absolute; left:50%; top:48%; transform:translate(-50%, -50%);
-      width:min(780px, 88%); height:230px;
-      filter: drop-shadow(0 50px 60px rgba(0,0,0,0.55));
-    }
-    .vehicle-body {
-      position:absolute; inset:55px 50px 38px;
-      border-radius: 80px 100px 48px 48px;
-      background: linear-gradient(180deg, #233343, #07101a 62%, #02060b);
-      border: 1px solid rgba(255,255,255,0.16);
-      box-shadow: inset 0 12px 35px rgba(255,255,255,0.08), inset 0 -28px 50px rgba(0,0,0,0.65);
-    }
-    .vehicle-glass {
-      position:absolute; left:165px; right:175px; top:28px; height:92px;
-      border-radius: 100px 120px 20px 20px;
-      background: linear-gradient(135deg, rgba(122,226,255,0.26), rgba(255,255,255,0.06));
-      border:1px solid rgba(190,245,255,0.2);
-    }
-    .lightbar { position:absolute; left:90px; right:90px; top:128px; height:4px; background: linear-gradient(90deg, transparent, var(--teal), var(--blue), transparent); box-shadow:0 0 28px var(--teal); }
-    .wheel { position:absolute; bottom:20px; width:94px; height:94px; border-radius:50%; background: radial-gradient(circle, #07111b 28%, #1a2a3a 31%, #03070b 62%); border: 1px solid rgba(255,255,255,0.2); }
-    .wheel.left { left:130px; } .wheel.right { right:140px; }
-    .surface-chip { position:absolute; border:1px solid rgba(36,226,255,0.36); color:var(--teal); background:rgba(6,20,32,0.68); border-radius:999px; padding:8px 12px; font-size:12px; box-shadow:0 0 26px rgba(36,226,255,0.14); }
-    .surface-chip:nth-of-type(1){ left:10%; top:16%; }
-    .surface-chip:nth-of-type(2){ right:11%; top:19%; }
-    .surface-chip:nth-of-type(3){ left:17%; bottom:18%; }
-    .surface-chip:nth-of-type(4){ right:17%; bottom:18%; }
-
-    .rightbar { padding:18px; overflow:auto; }
-    .status-grid { display:grid; gap:10px; }
-    .status { padding:14px; border-radius:18px; background: rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.08); }
-    .status span { color: var(--muted); display:block; font-size:12px; }
-    .status strong { font-size:18px; }
-    .aura-orb { width:110px; height:110px; border-radius:50%; margin:18px auto; background: radial-gradient(circle at 35% 30%, #fff, var(--teal) 28%, rgba(90,169,255,0.28) 55%, transparent 72%); box-shadow: 0 0 60px rgba(36,226,255,0.5); animation: breathe 3s ease-in-out infinite; }
-    @keyframes breathe { 0%,100% { transform: scale(0.96); opacity:.82 } 50% { transform: scale(1.04); opacity:1 } }
-
-    .timeline { grid-column: 1 / 4; display:flex; align-items:center; justify-content:space-between; padding: 16px 24px; gap:14px; overflow:auto; }
-    .step { min-width: 150px; color: var(--muted); position:relative; }
-    .step strong { color:var(--text); display:block; }
-    .step::before { content:""; width:12px; height:12px; border-radius:50%; background:var(--teal); box-shadow:0 0 24px var(--teal); display:block; margin-bottom:8px; }
-
-    @media (max-width: 1100px) {
-      .app-shell { grid-template-columns: 1fr; grid-template-rows: auto; }
-      .topbar, .timeline { grid-column: 1; }
-      .sidebar, .rightbar { display:none; }
-    }
+    :root{--navy:#07131f;--glass:rgba(12,30,46,.72);--line:rgba(125,233,255,.22);--text:#f3fbff;--muted:#9fb6c3;--teal:#24e2ff;--blue:#5aa9ff;--violet:#a886ff;--emerald:#79ffb2;--amber:#ffd37a}*{box-sizing:border-box}body{margin:0;min-height:100vh;color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:radial-gradient(circle at 20% 10%,rgba(36,226,255,.24),transparent 30%),radial-gradient(circle at 80% 15%,rgba(168,134,255,.2),transparent 28%),linear-gradient(135deg,#02070d 0%,var(--navy) 48%,#07111c 100%);overflow-x:hidden}body:before{content:"";position:fixed;inset:0;background-image:linear-gradient(rgba(255,255,255,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.035) 1px,transparent 1px);background-size:80px 80px;mask-image:radial-gradient(circle at center,black 0%,transparent 75%);pointer-events:none}.app-shell{min-height:100vh;display:grid;grid-template-columns:250px minmax(0,1fr)340px;grid-template-rows:74px minmax(0,1fr)86px;gap:18px;padding:18px}.topbar,.sidebar,.rightbar,.timeline,.hero-card,.vehicle-stage{border:1px solid var(--line);background:linear-gradient(145deg,rgba(14,35,54,.78),rgba(5,15,25,.56));backdrop-filter:blur(22px);box-shadow:0 24px 80px rgba(0,0,0,.32),inset 0 1px 0 rgba(255,255,255,.08);border-radius:28px}.topbar{grid-column:1/4;display:flex;align-items:center;justify-content:space-between;padding:0 24px}.brand{display:flex;align-items:center;gap:14px}.mark{width:42px;height:42px;border-radius:14px;background:radial-gradient(circle,var(--teal),var(--blue));box-shadow:0 0 36px rgba(36,226,255,.5);display:grid;place-items:center;color:#00131d;font-weight:900}.brand strong{display:block;font-size:15px;letter-spacing:.26em}.brand span,.muted{color:var(--muted);font-size:12px}.mode-switch,.hero-actions,.view-toggle{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.pill,button{border:1px solid rgba(125,233,255,.26);color:var(--text);background:rgba(255,255,255,.06);border-radius:999px;padding:11px 16px;cursor:pointer;transition:.18s;font-weight:700}button:hover,.pill.active,button.active{transform:translateY(-1px);border-color:var(--teal);box-shadow:0 0 28px rgba(36,226,255,.22);background:rgba(36,226,255,.12)}.sidebar,.rightbar{padding:18px}.nav-title{color:var(--muted);font-size:11px;letter-spacing:.22em;text-transform:uppercase;margin:4px 0 18px}.nav-item{display:flex;gap:12px;align-items:center;padding:14px;border-radius:18px;color:var(--muted);margin-bottom:8px;border:1px solid transparent}.nav-item.active,.nav-item:hover{color:var(--text);border-color:rgba(36,226,255,.24);background:rgba(255,255,255,.06)}.nav-icon{width:28px;height:28px;border-radius:10px;display:grid;place-items:center;background:rgba(36,226,255,.12)}.main-stage{display:grid;grid-template-rows:auto minmax(0,1fr);gap:18px}.hero-card{padding:26px;position:relative;overflow:hidden}.eyebrow{color:var(--teal);font-size:12px;letter-spacing:.24em;text-transform:uppercase;font-weight:800}h1{margin:10px 0;font-size:clamp(42px,5vw,74px);line-height:.95;letter-spacing:-.06em}.hero-card p{max-width:840px;color:var(--muted);font-size:16px;line-height:1.55}.primary{background:linear-gradient(135deg,rgba(36,226,255,.32),rgba(90,169,255,.18));border-color:var(--teal)}.vehicle-stage{position:relative;min-height:510px;overflow:hidden;padding:18px;background:radial-gradient(ellipse at center,rgba(36,226,255,.18),transparent 42%),linear-gradient(180deg,rgba(10,30,47,.55),rgba(2,8,14,.85))}.stage-head{display:flex;justify-content:space-between;gap:12px;align-items:center;position:relative;z-index:3}.preview{position:relative;height:395px;margin-top:14px;border-radius:24px;border:1px solid rgba(125,233,255,.16);background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(0,0,0,.2));overflow:hidden}.vehicle-view,.front-cabin,.rear-cabin{position:absolute;inset:0;opacity:0;pointer-events:none;transition:opacity .3s ease,transform .3s ease}.vehicle-view.active,.front-cabin.active,.rear-cabin.active{opacity:1;pointer-events:auto}.vehicle-view{transform:scale(.98)}.vehicle-view.active{transform:scale(1)}.showroom-floor{position:absolute;inset:auto -20% -34% -20%;height:60%;background:radial-gradient(ellipse at center,rgba(36,226,255,.18),transparent 58%);border-top:1px solid rgba(125,233,255,.12)}.vehicle{position:absolute;left:50%;top:52%;transform:translate(-50%,-50%);width:min(760px,88%);height:230px;filter:drop-shadow(0 50px 60px rgba(0,0,0,.55))}.vehicle-body{position:absolute;inset:55px 50px 38px;border-radius:80px 100px 48px 48px;background:linear-gradient(180deg,#233343,#07101a 62%,#02060b);border:1px solid rgba(255,255,255,.16);box-shadow:inset 0 12px 35px rgba(255,255,255,.08),inset 0 -28px 50px rgba(0,0,0,.65)}.vehicle-glass{position:absolute;left:165px;right:175px;top:28px;height:92px;border-radius:100px 120px 20px 20px;background:linear-gradient(135deg,rgba(122,226,255,.26),rgba(255,255,255,.06));border:1px solid rgba(190,245,255,.2)}.lightbar{position:absolute;left:90px;right:90px;top:128px;height:4px;background:linear-gradient(90deg,transparent,var(--teal),var(--blue),transparent);box-shadow:0 0 28px var(--teal)}.wheel{position:absolute;bottom:20px;width:94px;height:94px;border-radius:50%;background:radial-gradient(circle,#07111b 28%,#1a2a3a 31%,#03070b 62%);border:1px solid rgba(255,255,255,.2)}.wheel.left{left:130px}.wheel.right{right:140px}.cabin{display:grid;grid-template-columns:1fr 1fr;gap:16px;padding:24px;perspective:900px}.surface{border:1px solid rgba(36,226,255,.32);background:linear-gradient(135deg,rgba(36,226,255,.13),rgba(168,134,255,.08));border-radius:18px;display:flex;align-items:center;justify-content:center;text-align:center;color:var(--text);font-weight:800;box-shadow:inset 0 0 24px rgba(36,226,255,.08);cursor:pointer;transition:.2s}.surface:hover,.surface.selected{border-color:var(--teal);box-shadow:0 0 34px rgba(36,226,255,.24),inset 0 0 30px rgba(36,226,255,.12);transform:translateY(-2px)}.front-cabin .dash{grid-column:1/3;height:82px}.front-cabin .windshield{grid-column:1/3;height:90px;background:linear-gradient(135deg,rgba(255,255,255,.2),rgba(36,226,255,.05))}.front-cabin.digital .windshield{background:linear-gradient(135deg,rgba(36,226,255,.28),rgba(168,134,255,.18));box-shadow:inset 0 0 40px rgba(36,226,255,.18)}.front-cabin .console{height:190px}.front-cabin .door{height:190px}.rear-cabin .roof{grid-column:1/3;height:70px}.rear-cabin .seatback{height:150px}.rear-cabin .floor{grid-column:1/3;height:90px}.rear-cabin .rearwall{grid-column:1/3;height:70px}.caption{position:absolute;left:24px;bottom:18px;color:var(--muted);font-size:12px}.rightbar{overflow:auto}.aura-orb{width:104px;height:104px;border-radius:50%;margin:14px auto;background:radial-gradient(circle at 35% 30%,#fff,var(--teal) 28%,rgba(90,169,255,.28) 55%,transparent 72%);box-shadow:0 0 60px rgba(36,226,255,.5);animation:breathe 3s ease-in-out infinite}@keyframes breathe{0%,100%{transform:scale(.96);opacity:.82}50%{transform:scale(1.04);opacity:1}}.status-grid{display:grid;gap:10px}.status{padding:14px;border-radius:18px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08)}.status span{color:var(--muted);display:block;font-size:12px}.status strong{font-size:17px}.surface-detail{margin-top:16px;padding:16px;border-radius:20px;border:1px solid rgba(36,226,255,.18);background:rgba(255,255,255,.05)}.surface-detail h3{margin:0 0 8px}.timeline{grid-column:1/4;display:flex;align-items:center;justify-content:space-between;padding:16px 24px;gap:14px;overflow:auto}.step{min-width:150px;color:var(--muted);position:relative}.step strong{color:var(--text);display:block}.step:before{content:"";width:12px;height:12px;border-radius:50%;background:var(--teal);box-shadow:0 0 24px var(--teal);display:block;margin-bottom:8px}@media(max-width:1100px){.app-shell{grid-template-columns:1fr;grid-template-rows:auto}.topbar,.timeline{grid-column:1}.sidebar,.rightbar{display:none}.cabin{grid-template-columns:1fr}.front-cabin .dash,.front-cabin .windshield,.rear-cabin .roof,.rear-cabin .floor,.rear-cabin .rearwall{grid-column:1}}
   </style>
 </head>
 <body>
   <div class="app-shell">
-    <header class="topbar">
-      <div class="brand">
-        <div class="mark">A</div>
-        <div><strong>AURA STUDIO 2.0</strong><span>Digital Cabin Operating System</span></div>
-      </div>
-      <div class="mode-switch">
-        <span class="pill active">Immersive Mode</span>
-        <button onclick="location.href='/'">Engineering Mode</button>
-      </div>
-    </header>
-
-    <aside class="sidebar">
-      <p class="nav-title">Navigation</p>
-      <div class="nav-item active"><span class="nav-icon">⌂</span>Home</div>
-      <div class="nav-item"><span class="nav-icon">🚗</span>Vehicle</div>
-      <div class="nav-item"><span class="nav-icon">✨</span>Experiences</div>
-      <div class="nav-item"><span class="nav-icon">🐾</span>Companion</div>
-      <div class="nav-item"><span class="nav-icon">🧠</span>AI Brain</div>
-      <div class="nav-item"><span class="nav-icon">🔌</span>Integration</div>
-      <div class="nav-item"><span class="nav-icon">📺</span>Outputs</div>
-      <div class="nav-item"><span class="nav-icon">🏭</span>OEM Profiles</div>
-    </aside>
-
+    <header class="topbar"><div class="brand"><div class="mark">A</div><div><strong>AURA STUDIO 2.0</strong><span>Digital Cabin Operating System</span></div></div><div class="mode-switch"><span class="pill active">Immersive Mode</span><button onclick="location.href='/'">Engineering Mode</button></div></header>
+    <aside class="sidebar"><p class="nav-title">Navigation</p><div class="nav-item active"><span class="nav-icon">⌂</span>Home</div><div class="nav-item"><span class="nav-icon">🚗</span>Vehicle</div><div class="nav-item"><span class="nav-icon">✨</span>Experiences</div><div class="nav-item"><span class="nav-icon">🐾</span>Companion</div><div class="nav-item"><span class="nav-icon">🧠</span>AI Brain</div><div class="nav-item"><span class="nav-icon">🔌</span>Integration</div><div class="nav-item"><span class="nav-icon">📺</span>Outputs</div><div class="nav-item"><span class="nav-icon">🏭</span>OEM Profiles</div></aside>
     <main class="main-stage">
-      <section class="hero-card">
-        <p class="eyebrow">Demo Experience Shell · Sprint 1</p>
-        <h1>The cabin becomes alive.</h1>
-        <p>A premium demonstration layer for AURA DCOS. Use this mode to explain the vision, then switch to Engineering Mode to show the working platform controls.</p>
-        <div class="hero-actions">
-          <button class="primary">Launch Experience</button>
-          <button>Explore Vehicle</button>
-          <button>Demo Mode</button>
-          <button onclick="location.href='/'">Open Engineering Studio</button>
-        </div>
-      </section>
-
-      <section class="vehicle-stage">
-        <div class="showroom-floor"></div>
-        <div class="surface-chip">Transparent windshield by default</div>
-        <div class="surface-chip">Digital surfaces active</div>
-        <div class="surface-chip">Companion ready</div>
-        <div class="surface-chip">Risk: normal</div>
-        <div class="vehicle" aria-label="AURA concept vehicle preview">
-          <div class="vehicle-glass"></div>
-          <div class="vehicle-body"></div>
-          <div class="lightbar"></div>
-          <div class="wheel left"></div>
-          <div class="wheel right"></div>
+      <section class="hero-card"><p class="eyebrow">Studio v2 · Sprint 2</p><h1>Explore the living cabin.</h1><p>Select the exterior, front cabin or rear cabin. Click any digital surface to explain how AURA turns ordinary trim into a coordinated experience layer while keeping the front windshield transparent by default.</p><div class="hero-actions"><button class="primary" onclick="setView('rear')">Experience Rear Cabin</button><button onclick="setView('front')">Front Cabin</button><button onclick="setView('vehicle')">Vehicle View</button><button onclick="location.href='/'">Engineering Studio</button></div></section>
+      <section class="vehicle-stage"><div class="stage-head"><div><p class="eyebrow">Interactive Vehicle Preview</p><span class="muted" id="stageText">Vehicle exterior with digital cabin readiness.</span></div><div class="view-toggle"><button id="vehicleBtn" class="active" onclick="setView('vehicle')">Vehicle</button><button id="frontBtn" onclick="setView('front')">Front Cabin</button><button id="rearBtn" onclick="setView('rear')">Rear Cabin</button><button id="glassBtn" onclick="toggleGlass()">Glass: Transparent</button></div></div>
+        <div class="preview">
+          <div id="vehicleView" class="vehicle-view active"><div class="showroom-floor"></div><div class="vehicle"><div class="vehicle-glass"></div><div class="vehicle-body"></div><div class="lightbar"></div><div class="wheel left"></div><div class="wheel right"></div></div><div class="caption">Original AURA SUV · hidden sensors · panoramic glass · cabin surfaces ready</div></div>
+          <div id="frontView" class="front-cabin cabin"><div class="surface windshield" data-title="Smart Front Visibility" data-copy="Transparent by default for real road visibility. Digital mode is user-controlled and recommended only when parked or contextually safe.">Transparent Windshield</div><div class="surface dash" data-title="Digital Dashboard" data-copy="Driver-safe primary display for navigation, speed, alerts and contextual intelligence.">Digital Dashboard</div><div class="surface door" data-title="Digital Door Trims" data-copy="Door trims become subtle ambient displays that extend themes without distracting the driver.">Door Trims</div><div class="surface console" data-title="Digital Console and Armrest" data-copy="The center console and hand-rest/storage area become a premium interactive control surface.">Console + Armrest</div></div>
+          <div id="rearView" class="rear-cabin cabin"><div class="surface roof" data-title="Digital Roof" data-copy="The roof becomes a cinematic passenger canvas for stars, nature, wellness and theatre modes.">Digital Roof</div><div class="surface seatback" data-title="Full Digital Seat Backs" data-copy="The entire rear surface of both front seats is a seamless display, not a half fabric panel.">Left Seat Back</div><div class="surface seatback" data-title="Full Digital Seat Backs" data-copy="Rear passengers receive the richest AURA experience through full seat-back displays.">Right Seat Back</div><div class="surface rearwall" data-title="Rear Wall Display" data-copy="A full-width rear cabin display completes the wraparound digital environment.">Rear Wall</div><div class="surface floor" data-title="Digital Floor" data-copy="The floor becomes a low-motion ambient surface, guidance layer or playful passenger experience zone.">Digital Floor</div></div>
         </div>
       </section>
     </main>
-
-    <aside class="rightbar">
-      <p class="nav-title">Live System</p>
-      <div class="aura-orb"></div>
-      <div class="status-grid">
-        <div class="status"><span>Vehicle</span><strong>Parked</strong></div>
-        <div class="status"><span>Risk</span><strong style="color:var(--emerald)">Normal</strong></div>
-        <div class="status"><span>Experience</span><strong>Welcome</strong></div>
-        <div class="status"><span>Companion</span><strong>AURA Light</strong></div>
-        <div class="status"><span>Surfaces</span><strong>8 Ready</strong></div>
-        <div class="status"><span>Mode</span><strong>Immersive</strong></div>
-      </div>
-    </aside>
-
-    <footer class="timeline">
-      <div class="step"><strong>Vehicle Ready</strong><span>Digital twin online</span></div>
-      <div class="step"><strong>Companion Ready</strong><span>AURA presence active</span></div>
-      <div class="step"><strong>Brain Active</strong><span>Context understood</span></div>
-      <div class="step"><strong>Experience Armed</strong><span>Cabin surfaces ready</span></div>
-      <div class="step"><strong>Outputs Ready</strong><span>Multi-screen capable</span></div>
-    </footer>
+    <aside class="rightbar"><p class="nav-title">Live System</p><div class="aura-orb"></div><div class="status-grid"><div class="status"><span>View</span><strong id="viewStatus">Vehicle</strong></div><div class="status"><span>Selected Surface</span><strong id="surfaceStatus">Exterior Preview</strong></div><div class="status"><span>Windshield</span><strong id="glassStatus" style="color:var(--emerald)">Transparent</strong></div><div class="status"><span>Risk</span><strong style="color:var(--emerald)">Normal</strong></div><div class="status"><span>Surfaces</span><strong>Front + Rear Ready</strong></div></div><div class="surface-detail"><h3 id="detailTitle">AURA Vehicle Preview</h3><p class="muted" id="detailCopy">Select Front Cabin or Rear Cabin, then click a digital surface to explain its role in the AURA experience.</p></div></aside>
+    <footer class="timeline"><div class="step"><strong>Vehicle Preview</strong><span>Exterior ready</span></div><div class="step"><strong>Smart Visibility</strong><span>Transparent first</span></div><div class="step"><strong>Front Cabin</strong><span>Driver-safe surfaces</span></div><div class="step"><strong>Rear Cabin</strong><span>Full digital world</span></div><div class="step"><strong>Surface Selected</strong><span>Story-ready detail</span></div></footer>
   </div>
+  <script>
+    const views={vehicle:document.getElementById('vehicleView'),front:document.getElementById('frontView'),rear:document.getElementById('rearView')};
+    let currentView='vehicle'; let digitalGlass=false;
+    function setView(view){currentView=view;Object.entries(views).forEach(([key,el])=>el.classList.toggle('active',key===view));['vehicle','front','rear'].forEach(key=>document.getElementById(key+'Btn').classList.toggle('active',key===view));document.getElementById('viewStatus').textContent=view==='rear'?'Rear Cabin':view==='front'?'Front Cabin':'Vehicle';document.getElementById('stageText').textContent=view==='rear'?'Rear passengers experience the richest digital world.':view==='front'?'Driver-first cabin with transparent windshield by default.':'Vehicle exterior with digital cabin readiness.';setDetail(view==='rear'?'Rear Cabin Experience':view==='front'?'Front Cabin Experience':'AURA Vehicle Preview',view==='rear'?'All sides, full seat backs, floor, roof and rear wall become coordinated digital surfaces.':view==='front'?'Dashboard, doors, console and armrest are digital, while the windshield protects real-world visibility.':'Select a cabin view to inspect AURA digital surfaces.');}
+    function setDetail(title,copy){document.getElementById('detailTitle').textContent=title;document.getElementById('detailCopy').textContent=copy;document.getElementById('surfaceStatus').textContent=title;}
+    function toggleGlass(){digitalGlass=!digitalGlass;document.getElementById('frontView').classList.toggle('digital',digitalGlass);document.getElementById('glassBtn').textContent='Glass: '+(digitalGlass?'Digital':'Transparent');document.getElementById('glassStatus').textContent=digitalGlass?'Digital on demand':'Transparent';document.getElementById('glassStatus').style.color=digitalGlass?'var(--amber)':'var(--emerald)';setView('front');setDetail('Smart Front Visibility',digitalGlass?'Digital windshield mode is active on demand for immersive parked or controlled experiences.':'Transparent mode is the default to preserve road visibility and driver confidence.');}
+    document.querySelectorAll('.surface').forEach(el=>el.addEventListener('click',()=>{document.querySelectorAll('.surface').forEach(s=>s.classList.remove('selected'));el.classList.add('selected');setDetail(el.dataset.title,el.dataset.copy);}));
+  </script>
 </body>
 </html>
