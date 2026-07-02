@@ -17,6 +17,7 @@
     "@aura-dcos/calibration": "0.1.0",
     "@aura-dcos/cinematic-engine": "0.1.0",
     "@aura-dcos/companion": "0.1.0",
+    "@aura-dcos/companion-studio": "0.1.0",
     "@aura-dcos/digital-twin": "0.1.0",
     "@aura-dcos/display-router": "0.1.0",
     "@aura-dcos/emotion-engine": "0.1.0",
