@@ -26,6 +26,8 @@ The project combines engineering documentation, modular software packages, digit
 
 **Studio Track STU-1 through STU-5** is complete.
 
+**Studio v2 Sprint 3: Experience Engine** is complete. It adds the production theme registry, theme state manager, transition engine, surface synchronization, experience timeline, selector UI, live preview, documentation and tests.
+
 **Phase V: Production Vehicle Integration Framework** is complete. It adds the production HAL, vehicle communication backbone, signal manager, ECU discovery, sensor abstractions, body/comfort/audio controllers, OTA lifecycle, secure gateway, OEM adapter SDK and Vehicle Integration Studio model.
 
 **Phase W: Cinematic Graphics Engine** is complete. It adds render planning, shader/effect descriptors, particle systems, transitions, cabin visual scenes, quality budgets and driver-visible safety checks.
@@ -144,6 +146,7 @@ npm run release:check
 - Reference OEM Adapter — see `docs/software/reference-oem-adapter.md`.
 - Release Packaging — see `docs/software/release-packaging.md`.
 - Companion Ecosystem — see `docs/software/companion-ecosystem.md`.
+- Studio v2 Sprint 3: Experience Engine — see `docs/software/studio-v2-sprint-3-experience-engine.md`.
 - Phase V: Vehicle Integration Framework — see `docs/software/phase-v*.md`.
 - Phase W: Cinematic Graphics Engine — see `docs/software/phase-w-cinematic-graphics-engine.md`.
 - Phase X: AI Cabin Intelligence — see `docs/software/phase-x-ai-cabin-intelligence.md`.
