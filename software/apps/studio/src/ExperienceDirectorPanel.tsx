@@ -3,8 +3,10 @@ import { createAuraCinematicEngine, type CinematicSurfaceRole, type CinematicThe
 import { createAuraEmotionEngine } from '@aura-dcos/emotion-engine';
 import {
   createAuraExperienceDirector,
+  createAuraExperienceEngine,
   type ExperienceDirectorState,
   type ExperienceScene,
+  type ExperienceTheme,
 } from '@aura-dcos/experience-director';
 import { createAuraKeynoteMode } from '@aura-dcos/keynote-mode';
 import { type AuraCabinContext } from '@aura-dcos/digital-twin';
@@ -25,6 +27,20 @@ interface ExperienceDirectorPanelProps {
 }
 
 const cinematicSurfaces: CinematicSurfaceRole[] = ['dashboard', 'roof', 'projection', 'floor'];
+const cinematicThemeFallbacks: Record<ExperienceTheme, CinematicThemeId> = {
+  familyGlow: 'familyGlow',
+  auroraDrive: 'auroraDrive',
+  oceanSerenity: 'oceanSerenity',
+  rainSafety: 'rainSafety',
+  galaxyLounge: 'galaxyLounge',
+  executiveCalm: 'executiveCalm',
+  forestRetreat: 'forestZen',
+  cinemaMode: 'galaxyLounge',
+  productivityMode: 'executiveCalm',
+  familyAdventure: 'familyGlow',
+  wellnessMode: 'forestZen',
+  nightDrive: 'neonCity',
+};
 
 function driverAttentionFromDirective(value: string): DriverAttentionState {
   if (value === 'parked' || value === 'lowLoad' || value === 'mediumLoad' || value === 'highLoad' || value === 'critical') return value;
@@ -36,17 +52,34 @@ function surfaceStateFromDirective(value: string): SurfaceState {
   return 'ambient';
 }
 
+function companionModeFromDirective(value: string): CompanionState['mode'] {
+  if (value === 'visual' || value === 'voiceOnly' || value === 'assistive' || value === 'silent' || value === 'emergency') return value;
+  return 'assistive';
+}
+
+function companionMoodFromDirective(value: string): CompanionState['mood'] {
+  if (value === 'friendly' || value === 'focused' || value === 'alert' || value === 'emergency') return value;
+  if (value === 'calm' || value === 'gentle' || value === 'restorative') return 'focused';
+  if (value === 'delighted' || value === 'host') return 'friendly';
+  return 'focused';
+}
+
 function riskFromScene(scene: ExperienceScene): 'normal' | 'elevated' | 'critical' {
   if (scene.context.driverAttention === 'critical' || scene.context.weather === 'rain' && scene.context.speedKph > 70) return 'critical';
   if (scene.context.driverAttention === 'highLoad' || scene.context.speedKph > 60) return 'elevated';
   return 'normal';
 }
 
+function contextModeFromDirective(value: string): AuraCabinContext['mode'] {
+  if (value === 'family' || value === 'commute' || value === 'business' || value === 'safety') return value;
+  return 'commute';
+}
+
 function applyScene(baseState: ExperienceSceneState, scene: ExperienceScene): ExperienceSceneState {
   return {
     context: {
       ...baseState.context,
-      mode: scene.context.mode as AuraCabinContext['mode'],
+      mode: contextModeFromDirective(scene.context.mode),
       vehicleState: scene.context.vehicleState,
       speedKph: scene.context.speedKph,
       weather: scene.context.weather,
@@ -55,8 +88,8 @@ function applyScene(baseState: ExperienceSceneState, scene: ExperienceScene): Ex
     },
     companion: {
       ...baseState.companion,
-      mode: scene.companion.mode as CompanionState['mode'],
-      mood: scene.companion.mood as CompanionState['mood'],
+      mode: companionModeFromDirective(scene.companion.mode),
+      mood: companionMoodFromDirective(scene.companion.mood),
       message: scene.companion.message,
       animationLevel: scene.companion.animationLevel,
       allowVisualMotion: scene.companion.allowVisualMotion,
@@ -72,13 +105,24 @@ function applyScene(baseState: ExperienceSceneState, scene: ExperienceScene): Ex
 
 export function ExperienceDirectorPanel({ baseState, onApplyScene, onEvent }: ExperienceDirectorPanelProps) {
   const director = useMemo(() => createAuraExperienceDirector(), []);
+  const experienceEngine = useMemo(() => createAuraExperienceEngine(), []);
   const cinematic = useMemo(() => createAuraCinematicEngine(), []);
   const emotion = useMemo(() => createAuraEmotionEngine(), []);
   const keynote = useMemo(() => createAuraKeynoteMode(), []);
   const [directorState, setDirectorState] = useState<ExperienceDirectorState>(() => director.state());
   const [completedSceneIds, setCompletedSceneIds] = useState<string[]>([]);
+  const [selectedThemeId, setSelectedThemeId] = useState<ExperienceTheme>('oceanSerenity');
   const scenes = useMemo(() => director.allScenes(), [director]);
+  const themes = useMemo(() => experienceEngine.listThemes(), [experienceEngine]);
   const activeScene = directorState.scene;
+  const preview = useMemo(() => experienceEngine.preview(selectedThemeId, {
+    vehicleState: baseState.context.vehicleState,
+    speedKph: baseState.context.speedKph,
+    weather: baseState.context.weather,
+    occupants: baseState.context.occupants,
+    childPresent: baseState.context.childPresent,
+    driverAttention: baseState.driverAttention,
+  }), [baseState.context.childPresent, baseState.context.occupants, baseState.context.speedKph, baseState.context.vehicleState, baseState.context.weather, baseState.driverAttention, experienceEngine, selectedThemeId]);
   const sceneRisk = riskFromScene(activeScene);
   const emotionPlan = emotion.infer({
     vehicleState: activeScene.context.vehicleState,
@@ -90,7 +134,7 @@ export function ExperienceDirectorPanel({ baseState, onApplyScene, onEvent }: Ex
     risk: sceneRisk,
   });
   const cinematicPlans = cinematicSurfaces.map((surfaceRole) => cinematic.render({
-    theme: (emotionPlan.theme as CinematicThemeId) || activeScene.theme,
+    theme: cinematicThemeFallbacks[activeScene.theme] ?? (emotionPlan.theme as CinematicThemeId) ?? 'executiveCalm',
     surfaceRole,
     vehicleState: activeScene.context.vehicleState,
     speedKph: activeScene.context.speedKph,
@@ -103,9 +147,9 @@ export function ExperienceDirectorPanel({ baseState, onApplyScene, onEvent }: Ex
     scenes,
     completedSceneIds,
     openedOutputs: ['dashboard', 'roof', 'projection', 'floor'],
-    safetyChecks: completedSceneIds.includes('rain-safety') ? 2 : 0,
-    voiceChecks: completedSceneIds.includes('voice-context') ? 2 : 0,
-    integrationChecks: completedSceneIds.includes('integration-ready') ? 1 : 0,
+    safetyChecks: completedSceneIds.includes('theme-rainSafety') ? 2 : 0,
+    voiceChecks: completedSceneIds.includes('theme-productivityMode') ? 2 : 0,
+    integrationChecks: 1,
   });
 
   function publish(nextState: ExperienceDirectorState): void {
@@ -118,51 +162,82 @@ export function ExperienceDirectorPanel({ baseState, onApplyScene, onEvent }: Ex
     if (nextState.scene.triggerVoiceDemo) onEvent?.('experience.voice-demo.cue', 'Presenter cue: run safe and unsafe Voice Bridge prompts.');
   }
 
-  function start(): void {
-    setCompletedSceneIds([]);
-    publish(director.start());
-  }
-
-  function next(): void {
-    publish(director.next());
-  }
-
-  function previous(): void {
-    publish(director.previous());
-  }
-
+  function start(): void { setCompletedSceneIds([]); publish(director.start()); }
+  function next(): void { publish(director.next()); }
+  function previous(): void { publish(director.previous()); }
   function pauseOrResume(): void {
     const nextState = directorState.status === 'running' ? director.pause() : director.resume();
     setDirectorState(nextState);
     onEvent?.(nextState.status === 'paused' ? 'experience.paused' : 'experience.resumed', `${nextState.status} on ${nextState.scene.title}`);
   }
-
   function reset(): void {
     const nextState = director.stop();
     setDirectorState(nextState);
     setCompletedSceneIds([]);
     onEvent?.('experience.reset', 'Experience Director reset to first scene.');
   }
-
-  function jump(sceneId: string): void {
-    publish(director.goTo(sceneId));
+  function jump(sceneId: string): void { publish(director.goTo(sceneId)); }
+  function applyTheme(themeId: ExperienceTheme): void {
+    const activated = experienceEngine.activate(themeId, {
+      vehicleState: baseState.context.vehicleState,
+      speedKph: baseState.context.speedKph,
+      weather: baseState.context.weather,
+      occupants: baseState.context.occupants,
+      childPresent: baseState.context.childPresent,
+      driverAttention: baseState.driverAttention,
+    });
+    const scene = activated.timeline[0];
+    setSelectedThemeId(themeId);
+    setCompletedSceneIds((previous) => Array.from(new Set([...previous, scene.id])));
+    onApplyScene(scene, applyScene(baseState, scene));
+    onEvent?.('experience.theme.applied', `${activated.theme.name} applied with ${activated.synchronization.surfaces.length} synchronized surfaces.`);
   }
 
   return (
     <section className="experience-director-panel">
       <div className="experience-hero-card mini-grid">
         <article>
-          <p className="eyebrow">Phase STU</p>
-          <h2>One-Click AURA Experience</h2>
-          <p className="muted">Experience Director plus Cinematic, Emotion and Keynote intelligence.</p>
+          <p className="eyebrow">Studio v2 · Sprint 3</p>
+          <h2>Experience Engine</h2>
+          <p className="muted">Theme registry, state manager, transitions, timeline, synchronization and live preview.</p>
           <div className="actions two-col-actions">
-            <button onClick={start}>Start AURA Experience</button>
+            <button onClick={start}>Start Experience Timeline</button>
             <button onClick={next}>Next Scene</button>
             <button onClick={previous}>Previous Scene</button>
             <button onClick={pauseOrResume}>{directorState.status === 'running' ? 'Pause' : 'Resume'}</button>
             <button onClick={reset}>Reset</button>
           </div>
         </article>
+      </div>
+
+      <div className="experience-selector">
+        <header>
+          <div>
+            <p className="eyebrow">Theme Selector</p>
+            <h3>{preview.theme.name}</h3>
+            <p>{preview.theme.tagline}</p>
+          </div>
+          <button onClick={() => applyTheme(selectedThemeId)}>Apply Theme</button>
+        </header>
+        <select value={selectedThemeId} onChange={(event) => setSelectedThemeId(event.target.value as ExperienceTheme)}>
+          {themes.map((theme) => <option key={theme.id} value={theme.id}>{theme.name} · {theme.category}</option>)}
+        </select>
+        <div className="live-preview">
+          <article>
+            <strong>Transition</strong>
+            <span>{preview.transition.easing} · {preview.transition.durationMs}ms</span>
+            <small>{preview.transition.steps.join(' → ')}</small>
+            <small>{preview.transition.safetyNotes[0]}</small>
+          </article>
+          <article>
+            <strong>Surface Sync</strong>
+            <span>{preview.synchronization.safeForDriver ? 'driver-safe' : 'passenger-only while driving'}</span>
+            <small>{preview.synchronization.surfaces.map((surface) => `${surface.surfaceId}:${surface.energy}`).join(' · ')}</small>
+          </article>
+        </div>
+        <div className="theme-swatches">
+          {preview.theme.palette.map((swatch) => <span key={swatch}>{swatch}</span>)}
+        </div>
       </div>
 
       <div className="experience-progress integration-diagnostics ready">
