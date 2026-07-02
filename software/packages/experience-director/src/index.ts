@@ -1,6 +1,22 @@
 export type ExperienceStatus = 'idle' | 'running' | 'paused' | 'completed';
-export type ExperienceSceneKind = 'welcome' | 'commute' | 'voice' | 'weather' | 'safety' | 'integration' | 'vision';
-export type ExperienceTheme = 'familyGlow' | 'auroraDrive' | 'oceanSerenity' | 'rainSafety' | 'galaxyLounge' | 'executiveCalm';
+export type ExperienceSceneKind = 'welcome' | 'commute' | 'voice' | 'weather' | 'safety' | 'integration' | 'vision' | 'theme';
+export type ExperienceTheme =
+  | 'familyGlow'
+  | 'auroraDrive'
+  | 'oceanSerenity'
+  | 'rainSafety'
+  | 'galaxyLounge'
+  | 'executiveCalm'
+  | 'forestRetreat'
+  | 'cinemaMode'
+  | 'productivityMode'
+  | 'familyAdventure'
+  | 'wellnessMode'
+  | 'nightDrive';
+
+export type ExperienceSurfaceRole = 'dashboard' | 'windshield' | 'roof' | 'floor' | 'projection' | 'door' | 'rearCabin';
+export type ExperienceMotionLevel = 'none' | 'low' | 'medium' | 'high';
+export type ExperienceAudioMood = 'silent' | 'ambient' | 'cinematic' | 'focused' | 'playful' | 'wellness';
 
 export interface ExperienceSurfaceDirective {
   surfaceId: string;
@@ -63,128 +79,152 @@ export interface ExperienceDirectorState {
   events: ExperienceTimelineEvent[];
 }
 
-function now(): string {
-  return new Date().toISOString();
+export interface ExperienceThemeDescriptor {
+  id: ExperienceTheme;
+  name: string;
+  category: 'relaxation' | 'entertainment' | 'productivity' | 'family' | 'wellness' | 'driving' | 'safety' | 'presentation';
+  tagline: string;
+  palette: string[];
+  motion: ExperienceMotionLevel;
+  audioMood: ExperienceAudioMood;
+  driverVisibleSafe: boolean;
+  preferredSurfaces: ExperienceSurfaceRole[];
+  companionMood: string;
+  companionMessage: string;
+  surfaceContent: Record<ExperienceSurfaceRole, string>;
+}
+
+export interface ExperienceThemeState {
+  activeThemeId: ExperienceTheme;
+  previousThemeId?: ExperienceTheme;
+  status: 'idle' | 'previewing' | 'transitioning' | 'active';
+  transitionProgress: number;
+  lastChangedAt: string;
+}
+
+export interface ExperienceTransitionPlan {
+  id: string;
+  fromThemeId: ExperienceTheme;
+  toThemeId: ExperienceTheme;
+  durationMs: number;
+  easing: 'linear' | 'easeInOut' | 'cinematicFade' | 'safetyCut';
+  steps: string[];
+  safetyNotes: string[];
+}
+
+export interface SurfaceSynchronizationPlan {
+  themeId: ExperienceTheme;
+  safeForDriver: boolean;
+  surfaces: Array<{ surfaceId: ExperienceSurfaceRole; state: string; energy: number; content: string; motion: ExperienceMotionLevel; brightness: number; }>;
+}
+
+export interface ExperiencePreview {
+  theme: ExperienceThemeDescriptor;
+  timeline: ExperienceScene[];
+  transition: ExperienceTransitionPlan;
+  synchronization: SurfaceSynchronizationPlan;
+  state: ExperienceThemeState;
+}
+
+function now(): string { return new Date().toISOString(); }
+
+const content = (dashboard: string, windshield: string, roof: string, floor: string, projection: string, door: string, rearCabin: string): Record<ExperienceSurfaceRole, string> => ({ dashboard, windshield, roof, floor, projection, door, rearCabin });
+
+export const auraThemeRegistry: Record<ExperienceTheme, ExperienceThemeDescriptor> = {
+  oceanSerenity: { id: 'oceanSerenity', name: 'Ocean Serenity', category: 'relaxation', tagline: 'A calm blue cabin with wave-like motion across passenger surfaces.', palette: ['deep navy', 'aqua', 'teal', 'soft cyan'], motion: 'medium', audioMood: 'ambient', driverVisibleSafe: true, preferredSurfaces: ['roof', 'floor', 'projection', 'rearCabin'], companionMood: 'calm', companionMessage: 'Ocean Serenity is active. I will keep the cabin calm and low-distraction.', surfaceContent: content('Calm journey summary', 'Low-motion route ribbon', 'Bioluminescent wave ceiling', 'Soft shoreline path', 'Fluid AURA presence', 'Aqua welcome edge', 'Passenger reef ambience') },
+  galaxyLounge: { id: 'galaxyLounge', name: 'Galaxy Lounge', category: 'entertainment', tagline: 'A parked premium lounge mode with stars, nebula clouds and cinematic depth.', palette: ['black', 'deep violet', 'ice blue', 'silver'], motion: 'high', audioMood: 'cinematic', driverVisibleSafe: false, preferredSurfaces: ['roof', 'floor', 'projection', 'rearCabin'], companionMood: 'delighted', companionMessage: 'Galaxy Lounge is ready while parked. The cabin is now an immersive stargazing lounge.', surfaceContent: content('Parked lounge controls', 'Dimmed panoramic stars', 'Nebula sky field', 'Orbital light trails', 'AURA constellation guide', 'Starlight door trim', 'Deep-space theatre ambience') },
+  forestRetreat: { id: 'forestRetreat', name: 'Forest Retreat', category: 'relaxation', tagline: 'Organic greens, fireflies and soft breathing light for decompression.', palette: ['deep green', 'mint', 'soft blue', 'warm white'], motion: 'medium', audioMood: 'ambient', driverVisibleSafe: true, preferredSurfaces: ['roof', 'floor', 'door', 'rearCabin'], companionMood: 'restorative', companionMessage: 'Forest Retreat is active. I will reduce cabin intensity and keep guidance gentle.', surfaceContent: content('Minimal trip cards', 'Subtle horizon guide', 'Canopy and firefly ambience', 'Forest path glow', 'Quiet nature companion', 'Leaf-edge welcome', 'Restorative passenger cocoon') },
+  cinemaMode: { id: 'cinemaMode', name: 'Cinema Mode', category: 'entertainment', tagline: 'A parked theatre experience with synchronized screen focus and ambient dimming.', palette: ['black', 'warm gold', 'deep red', 'silver'], motion: 'low', audioMood: 'cinematic', driverVisibleSafe: false, preferredSurfaces: ['roof', 'projection', 'rearCabin'], companionMood: 'host', companionMessage: 'Cinema Mode is available while parked. I will dim the cabin and keep controls simple.', surfaceContent: content('Parked playback controls', 'Theatre blackout shade', 'Soft ceiling glow', 'Aisle path lighting', 'Main cinematic canvas', 'Do-not-disturb trim', 'Rear theatre surface') },
+  productivityMode: { id: 'productivityMode', name: 'Productivity Mode', category: 'productivity', tagline: 'A focused mobile workspace for parked or passenger-led work sessions.', palette: ['graphite', 'ice blue', 'white', 'soft amber'], motion: 'low', audioMood: 'focused', driverVisibleSafe: true, preferredSurfaces: ['dashboard', 'projection', 'rearCabin'], companionMood: 'focused', companionMessage: 'Productivity Mode is active. I will prioritize calendar, notes and quiet focus.', surfaceContent: content('Focus dashboard and next actions', 'Low-distraction agenda strip', 'Quiet focus gradient', 'Minimal footwell lighting', 'Workspace assistant', 'Focus status line', 'Private work canvas') },
+  familyAdventure: { id: 'familyAdventure', name: 'Family Adventure', category: 'family', tagline: 'A warm guided journey mode for children, discovery and shared cabin play.', palette: ['navy', 'coral', 'cyan', 'soft gold'], motion: 'medium', audioMood: 'playful', driverVisibleSafe: false, preferredSurfaces: ['roof', 'floor', 'projection', 'rearCabin'], companionMood: 'friendly', companionMessage: 'Family Adventure is active. I will keep the rear cabin playful and the driver view safe.', surfaceContent: content('Parent-safe journey cards', 'Navigation only', 'Animated discovery sky', 'Treasure path lighting', 'Interactive AURA buddy', 'Adventure entry glow', 'Games and learning surface') },
+  wellnessMode: { id: 'wellnessMode', name: 'Wellness Mode', category: 'wellness', tagline: 'Breathing guidance, soft gradients and recovery-first cabin pacing.', palette: ['midnight blue', 'mint', 'lavender', 'warm white'], motion: 'low', audioMood: 'wellness', driverVisibleSafe: true, preferredSurfaces: ['roof', 'floor', 'projection', 'door'], companionMood: 'gentle', companionMessage: 'Wellness Mode is active. Let us slow the cabin down and support a calmer journey.', surfaceContent: content('Wellness-safe status', 'Low-motion breathing edge', 'Guided breath halo', 'Calming pulse path', 'Wellness coach presence', 'Soft recovery light', 'Relaxation capsule') },
+  nightDrive: { id: 'nightDrive', name: 'Night Drive', category: 'driving', tagline: 'A driver-safe dark theme with low glare and precise visual hierarchy.', palette: ['black', 'cool blue', 'dim cyan', 'soft white'], motion: 'low', audioMood: 'focused', driverVisibleSafe: true, preferredSurfaces: ['dashboard', 'windshield', 'floor'], companionMood: 'focused', companionMessage: 'Night Drive is active. I will reduce glare and keep only the most useful information visible.', surfaceContent: content('Low-glare driver cluster', 'Dim AR lane and hazard cue', 'Near-black ambience', 'Subtle footwell guide', 'Voice-first presence', 'Dim safety trim', 'Quiet passenger night mode') },
+  familyGlow: { id: 'familyGlow', name: 'Family Glow', category: 'family', tagline: 'Warm welcome lighting for daily family journeys.', palette: ['navy', 'coral', 'cyan', 'soft gold'], motion: 'medium', audioMood: 'playful', driverVisibleSafe: false, preferredSurfaces: ['roof', 'floor', 'projection'], companionMood: 'friendly', companionMessage: 'Family mode is ready.', surfaceContent: content('Family welcome', 'Subtle welcome AR', 'Warm animated sky', 'Welcome pathway', 'AURA greeting', 'Warm trim', 'Family rear ambience') },
+  auroraDrive: { id: 'auroraDrive', name: 'Aurora Drive', category: 'presentation', tagline: 'Premium intelligent gradients for the AURA keynote path.', palette: ['midnight blue', 'cyan', 'violet', 'emerald'], motion: 'medium', audioMood: 'cinematic', driverVisibleSafe: true, preferredSurfaces: ['dashboard', 'windshield', 'projection'], companionMood: 'focused', companionMessage: 'Aurora Drive is active.', surfaceContent: content('Trip intelligence', 'Aurora route guidance', 'Passenger aurora wash', 'Guided motion line', 'AURA intelligence layer', 'Aurora edge trim', 'Premium passenger gradient') },
+  rainSafety: { id: 'rainSafety', name: 'Rain Safety', category: 'safety', tagline: 'Critical low-motion safety visuals for wet or high-load driving.', palette: ['charcoal', 'white', 'warning rose', 'cool blue'], motion: 'low', audioMood: 'focused', driverVisibleSafe: true, preferredSurfaces: ['dashboard', 'windshield', 'floor'], companionMood: 'emergency', companionMessage: 'Safety mode active. Driver-visible information is prioritized.', surfaceContent: content('Safety-critical cluster', 'Hazard emphasis', 'Safety dimmed', 'Emergency path', 'Projection disabled', 'Warning trim', 'Passenger safety notice') },
+  executiveCalm: { id: 'executiveCalm', name: 'Executive Calm', category: 'productivity', tagline: 'Quiet professional cabin language for business use.', palette: ['black', 'titanium', 'ice blue', 'warm amber'], motion: 'low', audioMood: 'focused', driverVisibleSafe: true, preferredSurfaces: ['dashboard', 'projection', 'rearCabin'], companionMood: 'focused', companionMessage: 'Executive Calm is active.', surfaceContent: content('Business status', 'Safe route summary', 'Minimal ambience', 'Subtle path', 'Assistant summary', 'Executive trim', 'Private business surface') },
+};
+
+function themeDirective(theme: ExperienceThemeDescriptor, surfaceId: ExperienceSurfaceRole, context: ExperienceContextDirective): ExperienceSurfaceDirective {
+  const driverVisible = surfaceId === 'dashboard' || surfaceId === 'windshield' || surfaceId === 'projection';
+  const forceSafety = context.driverAttention === 'critical' || (context.weather === 'rain' && context.speedKph > 70);
+  const unsafeWhileDriving = context.vehicleState === 'driving' && driverVisible && !theme.driverVisibleSafe;
+  const state = forceSafety ? (surfaceId === 'projection' ? 'off' : surfaceId === 'roof' || surfaceId === 'rearCabin' ? 'ambient' : 'emergency') : unsafeWhileDriving ? 'ambient' : theme.preferredSurfaces.includes(surfaceId) ? 'interactive' : 'ambient';
+  const energy = forceSafety ? (surfaceId === 'projection' ? 0 : surfaceId === 'dashboard' || surfaceId === 'windshield' || surfaceId === 'floor' ? 92 : 18) : unsafeWhileDriving ? 24 : theme.preferredSurfaces.includes(surfaceId) ? 82 : 46;
+  return { surfaceId, state, energy, theme: forceSafety ? 'rainSafety' : theme.id, content: theme.surfaceContent[surfaceId] };
+}
+
+function sceneForTheme(theme: ExperienceThemeDescriptor): ExperienceScene {
+  const parked = theme.category === 'entertainment' || theme.category === 'family';
+  const context: ExperienceContextDirective = { mode: theme.category === 'productivity' ? 'business' : theme.category === 'family' ? 'family' : theme.category === 'safety' || theme.category === 'driving' ? 'safety' : 'commute', vehicleState: parked ? 'parked' : 'driving', speedKph: parked ? 0 : theme.id === 'nightDrive' ? 54 : 36, weather: 'clear', occupants: theme.category === 'family' ? 4 : 1, childPresent: theme.category === 'family', driverAttention: parked ? 'parked' : 'mediumLoad' };
+  return { id: `theme-${theme.id}`, kind: 'theme', title: theme.name, durationMs: 24000, theme: theme.id, narration: theme.tagline, presenterCue: `Apply ${theme.name} and inspect synchronized dashboard, roof, floor and projection surfaces.`, nextCue: 'Select another Studio v2 theme or continue the keynote timeline.', context, companion: { mode: theme.category === 'driving' || theme.category === 'productivity' ? 'voiceOnly' : 'visual', mood: theme.companionMood, message: theme.companionMessage, allowSpeech: true, allowVisualMotion: theme.motion !== 'none' && context.vehicleState === 'parked', animationLevel: theme.motion === 'high' ? 90 : theme.motion === 'medium' ? 70 : 35 }, surfaces: ['dashboard', 'windshield', 'roof', 'floor', 'projection'].map((surface) => themeDirective(theme, surface as ExperienceSurfaceRole, context)) };
 }
 
 export const defaultAuraExperienceTimeline: ExperienceScene[] = [
-  {
-    id: 'welcome-awakening',
-    kind: 'welcome',
-    title: 'Intelligent Welcome',
-    durationMs: 18000,
-    theme: 'familyGlow',
-    narration: 'AURA recognizes the journey before it begins. The cabin wakes gently around every occupant.',
-    presenterCue: 'Open all outputs and show dashboard, roof, projection and floor waking together.',
-    nextCue: 'Daily commute intelligence',
-    context: { mode: 'family', vehicleState: 'parked', speedKph: 0, weather: 'clear', occupants: 3, childPresent: true, driverAttention: 'parked' },
-    companion: { mode: 'visual', mood: 'friendly', message: 'Welcome back. Family mode is ready.', allowSpeech: true, allowVisualMotion: true, animationLevel: 82 },
-    surfaces: [
-      { surfaceId: 'dashboard', state: 'informative', energy: 76, theme: 'familyGlow', content: 'Personalized welcome' },
-      { surfaceId: 'windshield', state: 'informative', energy: 62, theme: 'familyGlow', content: 'Subtle AR welcome' },
-      { surfaceId: 'roof', state: 'interactive', energy: 88, theme: 'galaxyLounge', content: 'Animated family sky' },
-      { surfaceId: 'floor', state: 'interactive', energy: 82, theme: 'oceanSerenity', content: 'Guided entry path' },
-      { surfaceId: 'projection', state: 'interactive', energy: 86, theme: 'auroraDrive', content: 'AURA companion greeting' },
-    ],
-  },
-  {
-    id: 'commute-intelligence',
-    kind: 'commute',
-    title: 'Commute Intelligence',
-    durationMs: 20000,
-    theme: 'auroraDrive',
-    narration: 'As the journey begins, AURA shifts from welcome ambience to driver-focused intelligence.',
-    presenterCue: 'Highlight that driver-visible surfaces stay useful and calm.',
-    nextCue: 'Voice with context',
-    context: { mode: 'commute', vehicleState: 'driving', speedKph: 48, weather: 'clear', occupants: 2, childPresent: false, driverAttention: 'mediumLoad' },
-    companion: { mode: 'voiceOnly', mood: 'focused', message: 'Route optimized. Driver displays remain focused.', allowSpeech: true, allowVisualMotion: false, animationLevel: 25 },
-    surfaces: [
-      { surfaceId: 'dashboard', state: 'informative', energy: 86, theme: 'auroraDrive', content: 'Navigation and trip intelligence' },
-      { surfaceId: 'windshield', state: 'informative', energy: 82, theme: 'auroraDrive', content: 'AR route guidance' },
-      { surfaceId: 'roof', state: 'ambient', energy: 42, theme: 'oceanSerenity', content: 'Calm passenger ambience' },
-      { surfaceId: 'floor', state: 'ambient', energy: 34, theme: 'oceanSerenity', content: 'Low-motion guidance' },
-      { surfaceId: 'projection', state: 'ambient', energy: 30, theme: 'executiveCalm', content: 'Voice-first companion' },
-    ],
-  },
-  {
-    id: 'voice-context',
-    kind: 'voice',
-    title: 'Voice With Context',
-    durationMs: 22000,
-    theme: 'executiveCalm',
-    narration: 'AURA understands context, not just commands. It helps when safe and refuses distraction while driving.',
-    presenterCue: 'Use Voice Bridge: ask for navigation, then ask to play a movie.',
-    nextCue: 'Rain safety mode',
-    context: { mode: 'business', vehicleState: 'driving', speedKph: 64, weather: 'clear', occupants: 1, childPresent: false, driverAttention: 'highLoad' },
-    companion: { mode: 'voiceOnly', mood: 'focused', message: 'For your safety, video playback is not available while driving.', allowSpeech: true, allowVisualMotion: false, animationLevel: 0 },
-    triggerVoiceDemo: true,
-    surfaces: [
-      { surfaceId: 'dashboard', state: 'informative', energy: 88, theme: 'executiveCalm', content: 'Driver-safe response' },
-      { surfaceId: 'windshield', state: 'informative', energy: 84, theme: 'executiveCalm', content: 'Safe route guidance' },
-      { surfaceId: 'roof', state: 'ambient', energy: 28, theme: 'executiveCalm', content: 'Reduced motion' },
-      { surfaceId: 'floor', state: 'ambient', energy: 26, theme: 'executiveCalm', content: 'Subtle path' },
-      { surfaceId: 'projection', state: 'ambient', energy: 18, theme: 'executiveCalm', content: 'Voice-only AURA' },
-    ],
-  },
-  {
-    id: 'rain-safety',
-    kind: 'safety',
-    title: 'Rain Safety Mode',
-    durationMs: 20000,
-    theme: 'rainSafety',
-    narration: 'When conditions change, AURA adapts before the driver has to ask.',
-    presenterCue: 'Show reduced motion, safety-first visuals and emergency floor path.',
-    nextCue: 'Vehicle integration scan',
-    context: { mode: 'safety', vehicleState: 'driving', speedKph: 82, weather: 'rain', occupants: 1, childPresent: false, driverAttention: 'critical' },
-    companion: { mode: 'emergency', mood: 'emergency', message: 'Heavy rain detected. Safety mode active.', allowSpeech: true, allowVisualMotion: false, animationLevel: 0 },
-    surfaces: [
-      { surfaceId: 'dashboard', state: 'emergency', energy: 96, theme: 'rainSafety', content: 'Safety-critical driving information' },
-      { surfaceId: 'windshield', state: 'emergency', energy: 95, theme: 'rainSafety', content: 'Hazard emphasis' },
-      { surfaceId: 'roof', state: 'ambient', energy: 12, theme: 'rainSafety', content: 'Dimmed roof' },
-      { surfaceId: 'floor', state: 'emergency', energy: 92, theme: 'rainSafety', content: 'Emergency path' },
-      { surfaceId: 'projection', state: 'off', energy: 0, theme: 'rainSafety', content: 'Projection disabled' },
-    ],
-  },
-  {
-    id: 'integration-ready',
-    kind: 'integration',
-    title: 'Vehicle Integration Ready',
-    durationMs: 18000,
-    theme: 'executiveCalm',
-    narration: 'AURA is hardware-adaptive and designed to integrate through vehicle adapters.',
-    presenterCue: 'Click Scan Vehicle in the Vehicle Integration Framework panel.',
-    nextCue: 'Future mobility vision',
-    context: { mode: 'business', vehicleState: 'parked', speedKph: 0, weather: 'clear', occupants: 1, childPresent: false, driverAttention: 'parked' },
-    companion: { mode: 'assistive', mood: 'focused', message: 'Vehicle Integration Framework ready.', allowSpeech: true, allowVisualMotion: true, animationLevel: 64 },
-    triggerVehicleScan: true,
-    surfaces: [
-      { surfaceId: 'dashboard', state: 'informative', energy: 80, theme: 'executiveCalm', content: 'Integration diagnostics' },
-      { surfaceId: 'windshield', state: 'informative', energy: 64, theme: 'executiveCalm', content: 'Adapter status' },
-      { surfaceId: 'roof', state: 'ambient', energy: 48, theme: 'executiveCalm', content: 'Calm technical showcase' },
-      { surfaceId: 'floor', state: 'ambient', energy: 44, theme: 'executiveCalm', content: 'Hardware scan path' },
-      { surfaceId: 'projection', state: 'interactive', energy: 72, theme: 'executiveCalm', content: 'OEM integration explanation' },
-    ],
-  },
-  {
-    id: 'future-vision',
-    kind: 'vision',
-    title: 'Future Mobility Vision',
-    durationMs: 18000,
-    theme: 'galaxyLounge',
-    narration: 'AURA is not a screen system. It is an intelligent experience layer for the mobility cabin.',
-    presenterCue: 'Close with the positioning: one operating system, every intelligent journey.',
-    nextCue: 'Experience complete',
-    context: { mode: 'family', vehicleState: 'parked', speedKph: 0, weather: 'clear', occupants: 4, childPresent: true, driverAttention: 'parked' },
-    companion: { mode: 'visual', mood: 'friendly', message: 'One operating system. Every intelligent journey.', allowSpeech: true, allowVisualMotion: true, animationLevel: 92 },
-    surfaces: [
-      { surfaceId: 'dashboard', state: 'informative', energy: 82, theme: 'galaxyLounge', content: 'AURA DCOS vision' },
-      { surfaceId: 'windshield', state: 'informative', energy: 76, theme: 'galaxyLounge', content: 'Future route' },
-      { surfaceId: 'roof', state: 'interactive', energy: 96, theme: 'galaxyLounge', content: 'Future mobility sky' },
-      { surfaceId: 'floor', state: 'interactive', energy: 88, theme: 'oceanSerenity', content: 'Experience pathway' },
-      { surfaceId: 'projection', state: 'interactive', energy: 94, theme: 'auroraDrive', content: 'AURA closing presence' },
-    ],
-  },
+  sceneForTheme(auraThemeRegistry.familyGlow),
+  sceneForTheme(auraThemeRegistry.oceanSerenity),
+  sceneForTheme(auraThemeRegistry.productivityMode),
+  sceneForTheme(auraThemeRegistry.rainSafety),
+  sceneForTheme(auraThemeRegistry.galaxyLounge),
+  sceneForTheme(auraThemeRegistry.familyAdventure),
 ];
+
+export class AuraThemeRegistry {
+  list(): ExperienceThemeDescriptor[] { return Object.values(auraThemeRegistry); }
+  get(themeId: ExperienceTheme): ExperienceThemeDescriptor { return auraThemeRegistry[themeId] ?? auraThemeRegistry.executiveCalm; }
+  scenes(): ExperienceScene[] { return this.list().map(sceneForTheme); }
+}
+
+export class AuraThemeStateManager {
+  private stateValue: ExperienceThemeState;
+  constructor(initialThemeId: ExperienceTheme = 'oceanSerenity') { this.stateValue = { activeThemeId: initialThemeId, status: 'idle', transitionProgress: 0, lastChangedAt: now() }; }
+  state(): ExperienceThemeState { return { ...this.stateValue }; }
+  preview(themeId: ExperienceTheme): ExperienceThemeState { this.stateValue = { ...this.stateValue, activeThemeId: themeId, status: 'previewing', transitionProgress: 0, lastChangedAt: now() }; return this.state(); }
+  activate(themeId: ExperienceTheme): ExperienceThemeState { this.stateValue = { activeThemeId: themeId, previousThemeId: this.stateValue.activeThemeId, status: 'active', transitionProgress: 100, lastChangedAt: now() }; return this.state(); }
+  transitionTo(themeId: ExperienceTheme, progress = 0): ExperienceThemeState { this.stateValue = { activeThemeId: themeId, previousThemeId: this.stateValue.activeThemeId, status: 'transitioning', transitionProgress: Math.max(0, Math.min(100, progress)), lastChangedAt: now() }; return this.state(); }
+}
+
+export class AuraThemeTransitionEngine {
+  plan(fromThemeId: ExperienceTheme, toThemeId: ExperienceTheme, vehicleState: 'parked' | 'driving' = 'parked'): ExperienceTransitionPlan {
+    const target = auraThemeRegistry[toThemeId] ?? auraThemeRegistry.executiveCalm;
+    const unsafe = vehicleState === 'driving' && !target.driverVisibleSafe;
+    return { id: `${fromThemeId}-to-${toThemeId}`, fromThemeId, toThemeId, durationMs: unsafe ? 400 : target.motion === 'high' ? 1800 : 1200, easing: unsafe ? 'safetyCut' : target.category === 'entertainment' ? 'cinematicFade' : 'easeInOut', steps: unsafe ? ['freeze driver-visible surfaces', 'dim unsafe motion layers', 'apply passenger-only theme'] : ['fade active palette', 'cross-map surface roles', 'synchronize companion message', 'complete cabin theme lock'], safetyNotes: unsafe ? ['Target theme is passenger-only while driving; driver-visible surfaces stay low-motion.'] : ['No blocking safety issue detected for this transition.'] };
+  }
+}
+
+export class AuraSurfaceSynchronizationEngine {
+  synchronize(themeId: ExperienceTheme, context: ExperienceContextDirective): SurfaceSynchronizationPlan {
+    const theme = auraThemeRegistry[themeId] ?? auraThemeRegistry.executiveCalm;
+    const surfaces = (['dashboard', 'windshield', 'roof', 'floor', 'projection'] as ExperienceSurfaceRole[]).map((surfaceId) => {
+      const directive = themeDirective(theme, surfaceId, context);
+      const driverVisible = surfaceId === 'dashboard' || surfaceId === 'windshield' || surfaceId === 'projection';
+      return { surfaceId, state: directive.state, energy: directive.energy, content: directive.content, motion: driverVisible && context.vehicleState === 'driving' ? 'low' : theme.motion, brightness: directive.energy };
+    });
+    return { themeId: theme.id, safeForDriver: context.vehicleState === 'parked' || theme.driverVisibleSafe, surfaces };
+  }
+}
+
+export class AuraExperienceEngine {
+  private readonly registry = new AuraThemeRegistry();
+  private readonly stateManager = new AuraThemeStateManager();
+  private readonly transitionEngine = new AuraThemeTransitionEngine();
+  private readonly syncEngine = new AuraSurfaceSynchronizationEngine();
+  listThemes(): ExperienceThemeDescriptor[] { return this.registry.list(); }
+  sceneFor(themeId: ExperienceTheme): ExperienceScene { return sceneForTheme(this.registry.get(themeId)); }
+  preview(themeId: ExperienceTheme, context?: Partial<ExperienceContextDirective>): ExperiencePreview {
+    const scene = this.sceneFor(themeId);
+    const mergedContext = { ...scene.context, ...context };
+    const state = this.stateManager.preview(themeId);
+    return { theme: this.registry.get(themeId), timeline: [scene], transition: this.transitionEngine.plan(state.previousThemeId ?? state.activeThemeId, themeId, mergedContext.vehicleState), synchronization: this.syncEngine.synchronize(themeId, mergedContext), state };
+  }
+  activate(themeId: ExperienceTheme, context?: Partial<ExperienceContextDirective>): ExperiencePreview {
+    const scene = this.sceneFor(themeId);
+    const mergedContext = { ...scene.context, ...context };
+    const before = this.stateManager.state();
+    const state = this.stateManager.activate(themeId);
+    return { theme: this.registry.get(themeId), timeline: [scene], transition: this.transitionEngine.plan(before.activeThemeId, themeId, mergedContext.vehicleState), synchronization: this.syncEngine.synchronize(themeId, mergedContext), state };
+  }
+}
 
 export class AuraExperienceDirector {
   private readonly timeline: ExperienceScene[];
@@ -193,104 +233,24 @@ export class AuraExperienceDirector {
   private elapsedMs = 0;
   private readonly events: ExperienceTimelineEvent[] = [];
 
-  constructor(timeline: ExperienceScene[] = defaultAuraExperienceTimeline) {
-    if (timeline.length === 0) throw new Error('Experience timeline requires at least one scene.');
-    this.timeline = timeline;
-  }
-
-  start(): ExperienceDirectorState {
-    this.status = 'running';
-    this.sceneIndex = 0;
-    this.elapsedMs = 0;
-    this.record('experience.started', 'AURA Experience started.');
-    return this.state();
-  }
-
-  pause(): ExperienceDirectorState {
-    this.status = 'paused';
-    this.record('experience.paused', `Paused on ${this.currentScene().title}.`);
-    return this.state();
-  }
-
-  resume(): ExperienceDirectorState {
-    this.status = 'running';
-    this.record('experience.resumed', `Resumed ${this.currentScene().title}.`);
-    return this.state();
-  }
-
-  stop(): ExperienceDirectorState {
-    this.status = 'idle';
-    this.elapsedMs = 0;
-    this.record('experience.stopped', 'AURA Experience stopped.');
-    return this.state();
-  }
-
-  next(): ExperienceDirectorState {
-    if (this.sceneIndex >= this.timeline.length - 1) {
-      this.status = 'completed';
-      this.record('experience.completed', 'AURA Experience completed.');
-      return this.state();
-    }
-    this.sceneIndex += 1;
-    this.elapsedMs = 0;
-    this.record('experience.scene.changed', `Advanced to ${this.currentScene().title}.`, this.currentScene().id);
-    return this.state();
-  }
-
-  previous(): ExperienceDirectorState {
-    this.sceneIndex = Math.max(0, this.sceneIndex - 1);
-    this.elapsedMs = 0;
-    this.record('experience.scene.changed', `Returned to ${this.currentScene().title}.`, this.currentScene().id);
-    return this.state();
-  }
-
-  goTo(sceneId: string): ExperienceDirectorState {
-    const index = this.timeline.findIndex((scene) => scene.id === sceneId);
-    if (index < 0) throw new Error(`Unknown experience scene: ${sceneId}`);
-    this.sceneIndex = index;
-    this.elapsedMs = 0;
-    this.record('experience.scene.changed', `Jumped to ${this.currentScene().title}.`, sceneId);
-    return this.state();
-  }
-
-  tick(deltaMs: number): ExperienceDirectorState {
-    if (this.status !== 'running') return this.state();
-    this.elapsedMs += Math.max(0, deltaMs);
-    while (this.elapsedMs >= this.currentScene().durationMs && this.status === 'running') {
-      this.elapsedMs -= this.currentScene().durationMs;
-      this.next();
-    }
-    return this.state();
-  }
-
-  currentScene(): ExperienceScene {
-    return this.timeline[this.sceneIndex];
-  }
-
-  allScenes(): ExperienceScene[] {
-    return [...this.timeline];
-  }
-
-  state(): ExperienceDirectorState {
-    const scene = this.currentScene();
-    const progressPercent = Math.round(((this.sceneIndex + this.elapsedMs / scene.durationMs) / this.timeline.length) * 100);
-    return {
-      status: this.status,
-      sceneIndex: this.sceneIndex,
-      scene,
-      progressPercent: Math.max(0, Math.min(100, progressPercent)),
-      elapsedMs: this.elapsedMs,
-      remainingMs: Math.max(0, scene.durationMs - this.elapsedMs),
-      events: [...this.events],
-    };
-  }
-
-  private record(type: string, message: string, sceneId = this.currentScene().id): void {
-    this.events.unshift({ id: `${type}-${Date.now()}-${this.events.length}`, timestamp: now(), type, message, sceneId });
-    this.events.splice(30);
-  }
+  constructor(timeline: ExperienceScene[] = defaultAuraExperienceTimeline) { if (timeline.length === 0) throw new Error('Experience timeline requires at least one scene.'); this.timeline = timeline; }
+  start(): ExperienceDirectorState { this.status = 'running'; this.sceneIndex = 0; this.elapsedMs = 0; this.record('experience.started', 'AURA Experience started.'); return this.state(); }
+  pause(): ExperienceDirectorState { this.status = 'paused'; this.record('experience.paused', `Paused on ${this.currentScene().title}.`); return this.state(); }
+  resume(): ExperienceDirectorState { this.status = 'running'; this.record('experience.resumed', `Resumed ${this.currentScene().title}.`); return this.state(); }
+  stop(): ExperienceDirectorState { this.status = 'idle'; this.elapsedMs = 0; this.record('experience.stopped', 'AURA Experience stopped.'); return this.state(); }
+  next(): ExperienceDirectorState { if (this.sceneIndex >= this.timeline.length - 1) { this.status = 'completed'; this.record('experience.completed', 'AURA Experience completed.'); return this.state(); } this.sceneIndex += 1; this.elapsedMs = 0; this.record('experience.scene.changed', `Advanced to ${this.currentScene().title}.`, this.currentScene().id); return this.state(); }
+  previous(): ExperienceDirectorState { this.sceneIndex = Math.max(0, this.sceneIndex - 1); this.elapsedMs = 0; this.record('experience.scene.changed', `Returned to ${this.currentScene().title}.`, this.currentScene().id); return this.state(); }
+  goTo(sceneId: string): ExperienceDirectorState { const index = this.timeline.findIndex((scene) => scene.id === sceneId); if (index < 0) throw new Error(`Unknown experience scene: ${sceneId}`); this.sceneIndex = index; this.elapsedMs = 0; this.record('experience.scene.changed', `Jumped to ${this.currentScene().title}.`, sceneId); return this.state(); }
+  tick(deltaMs: number): ExperienceDirectorState { if (this.status !== 'running') return this.state(); this.elapsedMs += Math.max(0, deltaMs); while (this.elapsedMs >= this.currentScene().durationMs && this.status === 'running') { this.elapsedMs -= this.currentScene().durationMs; this.next(); } return this.state(); }
+  currentScene(): ExperienceScene { return this.timeline[this.sceneIndex]; }
+  allScenes(): ExperienceScene[] { return [...this.timeline]; }
+  state(): ExperienceDirectorState { const scene = this.currentScene(); const progressPercent = Math.round(((this.sceneIndex + this.elapsedMs / scene.durationMs) / this.timeline.length) * 100); return { status: this.status, sceneIndex: this.sceneIndex, scene, progressPercent: Math.max(0, Math.min(100, progressPercent)), elapsedMs: this.elapsedMs, remainingMs: Math.max(0, scene.durationMs - this.elapsedMs), events: [...this.events] }; }
+  private record(type: string, message: string, sceneId = this.currentScene().id): void { this.events.unshift({ id: `${type}-${Date.now()}-${this.events.length}`, timestamp: now(), type, message, sceneId }); this.events.splice(30); }
 }
 
-export function createAuraExperienceDirector(timeline?: ExperienceScene[]): AuraExperienceDirector {
-  return new AuraExperienceDirector(timeline);
-}
+export function createAuraThemeRegistry(): AuraThemeRegistry { return new AuraThemeRegistry(); }
+export function createAuraThemeStateManager(initialThemeId?: ExperienceTheme): AuraThemeStateManager { return new AuraThemeStateManager(initialThemeId); }
+export function createAuraThemeTransitionEngine(): AuraThemeTransitionEngine { return new AuraThemeTransitionEngine(); }
+export function createAuraSurfaceSynchronizationEngine(): AuraSurfaceSynchronizationEngine { return new AuraSurfaceSynchronizationEngine(); }
+export function createAuraExperienceEngine(): AuraExperienceEngine { return new AuraExperienceEngine(); }
+export function createAuraExperienceDirector(timeline?: ExperienceScene[]): AuraExperienceDirector { return new AuraExperienceDirector(timeline); }
