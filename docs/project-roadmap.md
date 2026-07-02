@@ -50,6 +50,17 @@ This roadmap is the authoritative checklist for AURA DCOS development across cha
 | --- | --- | --- |
 | `@aura-dcos/companion-ecosystem` | Complete | Default light-being companion, animal companions, user-personalized profiles, role/personality settings, movement styles, driving safety policies, marketplace-ready metadata, docs, tests |
 
+## Studio v2 Immersive Demonstration Track
+
+| Sprint | Status | Deliverables |
+| --- | --- | --- |
+| 1 | Complete | Premium immersive shell, left navigation, hero landing screen, live vehicle preview placeholder, right status rail, companion orb, demo timeline, Engineering Mode switch, docs |
+| 2 | Next | Interactive vehicle and digital cabin preview with selectable surfaces |
+| 3 | Planned | Live experience engine controls and animated cabin theme switching |
+| 4 | Planned | Companion Studio UI and companion selection/creation preview |
+| 5 | Planned | Vehicle integration visualizer and diagnostics presentation layer |
+| 6 | Planned | Guided demo mode and presentation timeline |
+
 ## Platform v1.0 status
 
 AURA DCOS Platform v1.0 is feature complete at software-platform foundation level. Future work moves from platform construction to OEM-specific integration, real hardware bring-up, certification, HIL testing and commercialization assets.
